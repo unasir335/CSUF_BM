@@ -36,7 +36,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="btn btn-outline-light btn-nav" href="{% url 'home' %}">Home</a>
+            <a class="btn btn-outline-light btn-nav" href="#">Home</a>
           </li>
           <li class="nav-item">
             <a class="btn btn-outline-light btn-nav" href="#">About</a>
@@ -45,9 +45,9 @@
             <a class="btn btn-outline-light btn-nav" href="#">Contact</a>
           </li>
         </ul>
-        <div class="my-2 my-lg-0">
-          <a href="{% url 'Login' %}" class="btn btn-outline-light my-2 my-sm-0">Login</a>
-        </div>
+        <form class="form-inline my-2 my-lg-0">
+          <button class="btn btn-outline-light my-2 my-sm-0" type="button">Login</button>
+        </form>
       </div>
     </nav>
     <div class="container">{% block content %} {% endblock %}</div>
