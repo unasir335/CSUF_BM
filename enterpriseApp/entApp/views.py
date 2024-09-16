@@ -8,3 +8,6 @@ def home(request):
 def categories(request):
     catItems = CategoryItem.objects.all()
     return render(request, "categories.html", {"categories": catItems})
+
+def aboutUs(request):
+    return render(request, "aboutUs.html")
