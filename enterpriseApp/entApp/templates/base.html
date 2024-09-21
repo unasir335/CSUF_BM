@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,8 +9,8 @@
         Fullerton Black Market
       {% endblock %}
     </title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"  rel="stylesheet" />
-    <style>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css'%}"  rel="stylesheet" />
+    {% comment %} <style>
       .navbar {
         background-color: #343a40 !important;
       }
@@ -25,33 +26,24 @@
         background-color: #ffffff;
         color: #343a40;
       }
-    </style>
+    </style> {% endcomment %}
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-      <a class="navbar-brand" href="#">Fullerton Black Market</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="btn btn-outline-light btn-nav" href="{% url 'home' %}">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-outline-light btn-nav" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-outline-light btn-nav" href="#">Contact</a>
-          </li>
-        </ul>
-        <div class="my-2 my-lg-0">
-          <a href="{% url 'Login' %}" class="btn btn-outline-light my-2 my-sm-0">Login</a>
-        </div>
-      </div>
-    </nav>
-    <div class="container">{% block content %} {% endblock %}</div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" ></script>
+  
+
+    <!-- Navbar -->
+    {%include 'includes/navbar.html'%}
+
+    <!-- Content -->
+    <div class="container">
+      {% block content %} 
+
+      {% endblock %}
+    </div>
+
+
+  
+    <!-- Footer -->
+    {%include 'includes/footer.html'%}
   </body>
 </html>
