@@ -5,6 +5,9 @@ from .models import CategoryItem
 def home(request):
     return render(request,"home.html")
 
+def login(request):
+    return render(request,"login.html")
+
 def categories(request):
     catItems = CategoryItem.objects.all()
     return render(request, "categories.html", {"categories": catItems})
