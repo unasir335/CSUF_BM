@@ -16,10 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from entApp import views as entApp_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    #path('', entApp_views.home, name='home'),
     path('', include("entApp.urls")),
-    path('', include("login.urls")),
+    path('accounts/', include("accounts.urls")),
+
 ]
