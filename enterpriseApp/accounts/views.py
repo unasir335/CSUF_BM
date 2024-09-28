@@ -60,3 +60,5 @@ def logout_success(request):
 @login_required(login_url='login')
 def dashboard(request):
     return render(request, 'accounts/dashboard.html')
+
+#update
