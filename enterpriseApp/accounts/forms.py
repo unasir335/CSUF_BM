@@ -1,7 +1,10 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator
 
 Account = get_user_model()
+
+#TO-DO need to add improved server-side form validation.
 
 class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
