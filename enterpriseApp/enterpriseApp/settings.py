@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'entApp',
     'accounts',
+    #added TK: 9/29/24
+    'products',
+    'cart',
+    'checkout',
 
     
 ]

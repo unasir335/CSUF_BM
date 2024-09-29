@@ -23,5 +23,9 @@ urlpatterns = [
     #path('', entApp_views.home, name='home'),
     path('', include("entApp.urls")),
     path('accounts/', include("accounts.urls")),
+    path('checkout/', include("checkout.urls")),
+    path('cart/', include("cart.urls")),
+    path('store/', include("products.urls")),
+    
 
 ]

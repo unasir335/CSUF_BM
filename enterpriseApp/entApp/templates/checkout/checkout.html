@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<h1>EXAMPLE FORM CONTENT </h1>
+
+<h2>Checkout</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    
+    <h3>Order Summary</h3>
+    {% for item in cart_items %}
+        <p>{{ item.product.name }} - Quantity: {{ item.quantity }} - Subtotal: ${{ item.subtotal }}</p>
+    {% endfor %}
+    
+    <p>Subtotal: ${{ total }}</p>
+    <p>Tax: ${{ tax }}</p>
+    <p>Total: ${{ grand_total }}</p>
+    
+    <button type="submit">Place Order</button>
+</form>
+
+{% if not user.is_authenticated %}
+    <p>Have an account? <a href="{% url 'login' %}">Log in</a> for a faster checkout experience.</p>
+{% endif %}
+
+{% endblock %}
