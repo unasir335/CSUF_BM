@@ -26,33 +26,5 @@ class AccountAdmin(UserAdmin):
         }),
     )
 
-    """
-    Fieldsets for the add view.
-    """
-
-    def full_name(self, obj):
-        return f'{obj.first_name} {obj.last_name}' #Returns the full name of the account holder.
-    
-    full_name.short_description = 'Full Name' # Add a human-readable description to the full_name method
-
-    # Define a custom action to activate selected accounts
-    def activate_accounts(modeladmin, request, queryset):
-        queryset.update(is_active=True)
-    
-    # Define a custom action to deactivate selected accounts
-    def deactivate_accounts(modeladmin, request, queryset):
-        queryset.update(is_active=False)
-
-    # Add a human-readable description to the deactivate_accounts action
-    activate_accounts.short_description = 'Activate selected accounts'
-    deactivate_accounts.short_description = 'Deactivate selected accounts'
-
-    # Define a list of custom actions that will be available in the admin interface
-    actions = [activate_accounts, deactivate_accounts] 
-
-    # Customize the title and header of the admin interface
-    admin.site.site_title = 'Your Site Title'
-    admin.site.site_header = "Your Site Header"  
-
 admin.site.register(Account, AccountAdmin)
 admin.site.register(OrderHistory)
