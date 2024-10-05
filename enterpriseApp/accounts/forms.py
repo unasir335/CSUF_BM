@@ -6,13 +6,24 @@ Account = get_user_model()
 
 #TO-DO need to add improved server-side form validation.
 
+phone_regex = RegexValidator(
+    regex=r'^\+?1?\d{9,15}$',
+    message="Phone number must be entered in the format: '+9999999999. Up to 15 digits allowed."
+)
 class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         'placeholder': 'Enter Password',
         'class': 'form-control',
     }))
+
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={
         'placeholder': 'Confirm Password'
+    }))
+    
+    # Add phone number validation using the phone_regex pattern
+    phone_number = forms.CharField(validators=[phone_regex], widget=forms.textInput(attrs={
+        'placeholder': 'Phone Number',
+        'class': 'form-control',
     }))
 
     class Meta:
