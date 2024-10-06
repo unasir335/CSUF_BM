@@ -91,9 +91,9 @@ LOGIN_URL = 'login'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fbmDB',
+        'NAME': 'ecommerce',
         'USER': 'root',
-        'PASSWORD': config('DB_PASSWORD'),
+        'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '3306',
     }

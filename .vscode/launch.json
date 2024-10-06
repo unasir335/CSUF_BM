@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "gcc",
+      "args": [
+        "-g",
+        "your_program.c",  // Replace with your source file(s)
+        "-o",
+        "build/Debug/outDebug"  // Output binary path
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "detail": "Generated task by C/C++ extension."
+    }
+  ]
+}
