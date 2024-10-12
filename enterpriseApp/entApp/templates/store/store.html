@@ -1,6 +1,23 @@
 {% extends "base.html" %} {% block title %} About the FBM {% endblock %}
 {% block content %}
-<p>
-    store.html loaded
-</p>
+
+
+{% if products%}
+<ul>
+    {% for product in products%}
+    
+    <li>
+        <h2> <a href="{{ product.get_url }}">{{ product.name }}</a></h2>
+        <p>Price: {{product.price}}</p>
+
+        <img class="card-img-top" src="{{ product.image.url }}" alt="..." style="width: 200px; height: 200px;"/>
+        {% if product.average_rating%}
+            <p>Avg. Rate: {{product.average_rating}}</p>
+        {%endif%}
+    </li>
+    {%endfor%}
+{%else%}
+    <p> no products available </p>
+{%endif%}
+
 {% endblock %}

@@ -16,7 +16,7 @@ def store(request, category_slug=None):
     else:
         products = Product.objects.all().filter(is_available=True)
 
-    context = {
+    context =  {
         'products': products,
     }
     return render(request, 'store/store.html', context)

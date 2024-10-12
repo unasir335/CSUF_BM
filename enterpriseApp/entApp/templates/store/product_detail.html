@@ -1,6 +1,19 @@
-{% extends "base.html" %} {% block title %} About the FBM {% endblock %}
+{% extends "base.html" %}
+{% block title %} {{ single_product.name }} {% endblock %}
 {% block content %}
-<p>
-    product_detail.html loaded
-</p>
+
+<h1>{{ single_product.name }}</h1>
+
+<div class = "product-detail">
+    <img src =" {{ single_product.image.url }} " alt = "{{ single_product.name }}" width = "300px">
+    <p> Price: {{ single_product.price }}</p>
+    <p> Description: {{single_product.description}}</p>
+    <p> Category: {{single_product.category.name}}</p>
+    <p> Stock: {{single_product.stock}}</p>
+
+    {% if single_product.average_rating %}
+        <p>Average Rating: {{ single_product.average_rating }}</p>
+    {% endif %}
+</div>
+
 {% endblock %}
