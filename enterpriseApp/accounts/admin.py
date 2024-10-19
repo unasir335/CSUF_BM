@@ -1,30 +1,28 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import Account, OrderHistory
-# Register your models here.
+from .models import Account, Address, Student, Faculty
 
-class AccountAdmin(UserAdmin):
+class AddressInline(admin.StackedInline):
+    model = Address
+    can_delete = False
+    verbose_name_plural = 'Address'
+
+class AccountAdmin(admin.ModelAdmin):
     list_display = ('email', 'first_name', 'last_name', 'username', 'last_login', 'date_joined', 'is_active')
     list_display_links = ('email', 'first_name', 'last_name')
     readonly_fields = ('last_login', 'date_joined')
     ordering = ('-date_joined',)
 
     filter_horizontal = ()
-    list_filter = ('is_active', 'is_staff', 'is_superadmin')
+    list_filter = ()
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'username', 'phone_number')}),
-        ('Address', {'fields': ('address_line1', 'address_line2', 'city', 'state', 'country', 'zipcode')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superadmin', 'is_student', 'is_faculty')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'username', 'phone_number', 'profile_picture')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superadmin')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'first_name', 'last_name', 'username', 'phone_number'),
-        }),
-    )
+    inlines = (AddressInline,)
 
 admin.site.register(Account, AccountAdmin)
-admin.site.register(OrderHistory)
+admin.site.register(Student)
+admin.site.register(Faculty)

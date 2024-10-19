@@ -1,6 +1,58 @@
-{% extends "base.html" %} {% block title %} About the FBM {% endblock %}
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Store{% endblock %}
+
 {% block content %}
-<p>
-    store.html loaded
-</p>
+<div class="container store-page-container">
+    <div class="row">
+        <div class="col-md-3">
+            <h3>Categories</h3>
+            <ul class="list-group mb-4">
+                <li class="list-group-item {% if not category %}active{% endif %}">
+                    <a href="{% url 'store' %}" class="text-decoration-none {% if not category %}text-white{% endif %}">All Products</a>
+                </li>
+                {% for cat in categories %}
+                <li class="list-group-item {% if category.slug == cat.slug %}active{% endif %}">
+                    <a href="{{ cat.get_url }}" class="text-decoration-none {% if category.slug == cat.slug %}text-white{% endif %}">{{ cat.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="col-md-9">
+            <form method="get" class="mb-4">
+                <div class="input-group">
+                    {{ sort_form.sort_by }}
+                    <button type="submit" class="btn btn-primary">Sort</button>
+                </div>
+            </form>
+
+            {% if products %}
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for product in products %}
+                        <div class="col">
+                            <div class="card h-100">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" alt="Default product image">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title"><a href="{{ product.get_url }}" class="text-decoration-none">{{ product.name }}</a></h5>
+                                    <p class="card-text">Price: ${{ product.price }}</p>
+                                    {% if product.average_rating %}
+                                        <p class="card-text">Rating: {{ product.average_rating|floatformat:1 }} / 5</p>
+                                    {% endif %}
+                                    <a href="{{ product.get_url }}" class="btn btn-primary mt-auto">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No products available.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

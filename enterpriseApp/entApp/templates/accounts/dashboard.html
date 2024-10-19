@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1>Welcome to Your Dashboard, {{ full_name }}!</h1>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    User Information
+                </div>
+                <div class="card-body">
+                    <p><strong>User Type:</strong> {{ user_type }}</p>
+                    <p><strong>Email:</strong> {{ email }}</p>
+                    <p><strong>Phone:</strong> {{ phone_number }}</p>
+                    <p><strong>Joined:</strong> {{ date_joined|date:"F d, Y" }}</p>
+                    <p><strong>Last Login:</strong> {{ last_login|date:"F d, Y H:i" }}</p>
+                    {% if user_type == 'Student' %}
+                        <p><strong>Student ID:</strong> {{ student_id }}</p>
+                        <p><strong>Major:</strong> {{ major }}</p>
+                        <p><strong>Year:</strong> {{ year }}</p>
+                    {% elif user_type == 'Faculty' %}
+                        <p><strong>Faculty ID:</strong> {{ faculty_id }}</p>
+                        <p><strong>Department:</strong> {{ department }}</p>
+                        <p><strong>Position:</strong> {{ position }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Statistics
+                </div>
+                <div class="card-body">
+                    <p><strong>Total Orders:</strong> {{ order_count }}</p>
+                    <p><strong>Total Spent:</strong> ${{ total_spent|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,8 +1,7 @@
 {% extends "base.html" %}
-
 {% block title %}Register{% endblock %}
-
 {% block content %}
+
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -11,25 +10,26 @@
                     <h3 class="float-left">Register</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{% url 'register' %}">
+                    <form method="post" action="{% url 'register' %}">
                         {% csrf_token %}
                         {% for field in form %}
                             <div class="form-group">
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field.label_tag }}
                                 {{ field }}
                                 {% if field.errors %}
-                                    <small class="text-danger">{{ field.errors|striptags }}</small>
+                                    <span class="small text-danger">{{ field.errors|striptags }}</span>
                                 {% endif %}
                             </div>
                         {% endfor %}
                         <button type="submit" class="btn btn-primary btn-block">Register</button>
                     </form>
                     <div class="mt-3 text-center">
-                        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+                        Already have an account? <a href="{% url 'login' %}">Login here</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
