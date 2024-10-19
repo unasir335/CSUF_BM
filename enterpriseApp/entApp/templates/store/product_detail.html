@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ single_product.name }}{% endblock %}
 {% block content %}
-
 <div class="container mt-4">
     <h1>{{ single_product.name }}</h1>
-
     <div class="row">
         <div class="col-md-6">
             <img src="{{ single_product.image.url }}" alt="{{ single_product.name }}" class="img-fluid">
@@ -28,6 +26,21 @@
             </form>
         </div>
     </div>
+{% block title %} {{ single_product.name }} {% endblock %}
+{% block content %}
+
+<h1>{{ single_product.name }}</h1>
+
+<div class = "product-detail">
+    <img src =" {{ single_product.image.url }} " alt = "{{ single_product.name }}" width = "300px">
+    <p> Price: {{ single_product.price }}</p>
+    <p> Description: {{single_product.description}}</p>
+    <p> Category: {{single_product.category.name}}</p>
+    <p> Stock: {{single_product.stock}}</p>
+
+    {% if single_product.average_rating %}
+        <p>Average Rating: {{ single_product.average_rating }}</p>
+    {% endif %}
 </div>
 
 {% endblock %}

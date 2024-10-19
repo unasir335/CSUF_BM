@@ -14,12 +14,14 @@ def store(request, category_slug=None):
     else:
         products = Product.objects.all().filter(is_available=True)
 
+
     if sort_form.is_valid():
         sort_by = sort_form.cleaned_data['sort_by']
         if sort_by:
             products = products.order_by(sort_by)
 
     context = {
+
         'products': products,
         'sort_form': sort_form,
     }
