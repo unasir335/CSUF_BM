@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="float-left">Edit Profile</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Profile Picture -->
+                    <div class="text-center mb-4">
+                        {% if form.instance.profile_picture %}
+                            <img src="{{ form.instance.profile_picture.url }}" alt="Profile Picture" width="300" height="150">
+                        {% else %}
+                            <img src="{% static 'profile_pics/80x80.png' %}" alt="Default Profile Picture" class="rounded-circle" width="80" height="80">
+                        {% endif %}
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="form-group mb-3">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.errors %}
+                                    <span class="small text-danger">{{ field.errors|striptags }}</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="float-left">Change Password</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in password_form %}
+                            <div class="form-group mb-3">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% if field.errors %}
+                                    <span class="small text-danger">{{ field.errors|striptags }}</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" name="password_change" class="btn btn-primary">
+                            <i class="fas fa-key me-2"></i>Change Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

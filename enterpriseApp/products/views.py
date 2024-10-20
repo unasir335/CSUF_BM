@@ -1,14 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Product, Category
-
+from .forms import ProductSortForm #added 10/18
 # Create your views here.
-
-# TO-DO 
-# BASIC LAYOUT IS DONE. NEED TO 
-
+#modified 10/18
 def store(request, category_slug=None):
     categories = None
     products = None
+    sort_form = ProductSortForm(request.GET)
 
     if category_slug != None:
         categories = get_object_or_404(Category, slug=category_slug)
@@ -16,8 +14,16 @@ def store(request, category_slug=None):
     else:
         products = Product.objects.all().filter(is_available=True)
 
-    context =  {
+
+    if sort_form.is_valid():
+        sort_by = sort_form.cleaned_data['sort_by']
+        if sort_by:
+            products = products.order_by(sort_by)
+
+    context = {
+
         'products': products,
+        'sort_form': sort_form,
     }
     return render(request, 'store/store.html', context)
 
@@ -31,3 +37,10 @@ def product_detail(request, category_slug, product_slug):
         'single_product': single_product,
     }
     return render(request, 'store/product_detail.html', context)
+
+#added 10/18
+def categories_processor(request):
+    return {
+        'categories': Category.objects.all()
+    }
+

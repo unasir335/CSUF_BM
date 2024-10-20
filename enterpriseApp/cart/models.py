@@ -1,8 +1,6 @@
 from django.db import models
 from django.conf import settings
-from products.models import Product #notice this import. This links to products module models.py
-
-# Create your models here.
+from products.models import Product
 
 class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
@@ -33,8 +31,8 @@ class CartItem(models.Model):
 
     @property
     def subtotal(self):
-        return self.product.discounted_price * self.quantity  # Using discounted_price from Product model
+        return self.product.discounted_price * self.quantity
 
     def update_quantity(self, quantity):
-        self.quantity = max(1, min(quantity, self.product.stock))  # Ensure quantity is between 1 and available stock
+        self.quantity = max(1, min(quantity, self.product.stock))
         self.save()

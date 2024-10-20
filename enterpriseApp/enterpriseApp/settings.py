@@ -21,13 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret key used in production secret!s
 SECRET_KEY = config('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# 10/5
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=lambda v: [s.strip() for s in v.split(',')])
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'entApp',
     'accounts',
     #added TK: 9/29/24
@@ -57,6 +58,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #added 10/18 for cart to attach it to objects
+    'cart.views.cart_middleware',
 ]
 
 ROOT_URLCONF = 'enterpriseApp.urls'
@@ -72,6 +75,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                #Added 10/17 for sorting and cart updates
+                'products.views.categories_processor',
+                'cart.views.cart_context_processor',
             ],
         },
     },
@@ -146,11 +152,29 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
+#TK added 10/15/24
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
 
-# Email Configuration
+# Email Configuration 10/5
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com' 
+EMAIL_HOST = 'smtp.mailgun.org'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = 'postmaster@sandbox1db6c290a2fe4440b8b8b117cde6b41b.mailgun.org'
+EMAIL_HOST_PASSWORD = '473bc8d2c035b03406a637616d951afa-5dcb5e36-fcf505f5'
+DEFAULT_FROM_EMAIL = 'cc1052024@outlook.com'  # Replace with your sender email
+
+# Security enhancements
+CSRF_COOKIE_SECURE = True  # Use only with HTTPS
+SESSION_COOKIE_SECURE = True  # Use only with HTTPS
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+
+# 6d9b824ffd506a9fadb4000135585b69-5dcb5e36-6f198fca
