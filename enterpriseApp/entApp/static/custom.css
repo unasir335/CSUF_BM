@@ -51,3 +51,33 @@
 .store-page-container .btn-view-details {
     margin-top: auto;
 }
+
+/* checkout.html */
+.checkout-page-container .form-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+.checkout-page-container .form-control {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    padding: 0.375rem 0.75rem;
+}
+.checkout-page-container .form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+.checkout-page-container .card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.checkout-page-container .errorlist {
+    list-style: none;
+    padding-left: 0;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+.checkout-page-container .billing-section {
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}

@@ -7,8 +7,6 @@ from django.dispatch import receiver
 import os
 from django.db.models.signals import pre_save
 
-# ISP: UserManager defines a focused interface for user management
-# OCP: New user management methods can be added by implementing this interface
 class UserManager(ABC):
     @abstractmethod
     def create_user(self, first_name, last_name, username, email, password=None):
@@ -18,7 +16,6 @@ class UserManager(ABC):
     def create_superuser(self, first_name, last_name, email, username, password):
         pass
     
-# LSP: MyAccountManager can be used wherever UserManager is expected
 class MyAccountManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
@@ -36,6 +33,7 @@ class MyAccountManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('is_admin', True)  # Add this line
         return self.create_user(username, email, password, **extra_fields)
 
 
@@ -54,7 +52,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
     # User type fields
     is_admin        = models.BooleanField(default=False)
     is_active       = models.BooleanField(default=True)
-    is_superadmin   = models.BooleanField(default=False)
     is_staff        = models.BooleanField(default=False)
     is_student      = models.BooleanField(default=False)
     is_faculty      = models.BooleanField(default=False)
@@ -66,7 +63,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
    
-    # OCP: New user attributes can be added here without modifying other parts of the system
     objects = MyAccountManager()
     
     def __str__(self):
@@ -78,16 +74,34 @@ class Account(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.first_name
     
+    # modified 10/22
+    # def has_perm(self, perm, obj=None):
+    #     return self.is_superuser
     def has_perm(self, perm, obj=None):
-        return self.is_admin
+    #Check if user has a specific permission.
+        if self.is_superuser:
+            return True
+        if self.is_admin:
+            return True
+        return False
     
-    def has_module_perms(self, add_label):
-        return True
+    # modified 10/22
+    # def has_module_perms(self, add_label):
+    #     return True
+    def has_module_perms(self, app_label):
+    #Check if user has permissions to view the app `app_label`
+        if self.is_superuser:
+            return True
+        if self.is_admin:
+            return True
+        return False
+    # 10/22 added
+    @property
+    def is_superuser_or_admin(self):
+    #Check if user is either superuser or admin.
+        return self.is_superuser or self.is_admin
 
 
-# SRP: Student model is responsible only for student-specific information
-# OCP: New student attributes can be added without modifying Account model
-# LSP: Student can be used wherever an Account is expected due to the OneToOneField
 class Student(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     student_id = models.CharField(max_length=20, unique=True)
@@ -97,9 +111,6 @@ class Student(models.Model):
     def __str__(self):
         return f"Student: {self.user.get_full_name()}"
 
-# SRP: Faculty model is responsible only for faculty-specific information
-# OCP: New faculty attributes can be added without modifying Account model
-# LSP: Faculty can be used wherever an Account is expected due to the OneToOneField
 class Faculty(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     faculty_id = models.CharField(max_length=20, unique=True)
@@ -109,7 +120,6 @@ class Faculty(models.Model):
     def __str__(self):
         return f"Faculty: {self.user.get_full_name()}"
 
-# SRP: Address model is responsible only for address-specific information
 class Address(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='address')
     address_line1 = models.CharField(max_length=100, blank=True)
@@ -135,8 +145,8 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
-    profile_picture = models.ImageField(upload_to='users/profile_pictures', default='users/profile_pics/300x150.png')
+    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='users/profile_pictures', default='users/profile_pics/300x150.png', blank=True)
     address_line1 = models.CharField(max_length=100, blank=True)
     address_line2 = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=50, blank=True)
@@ -169,7 +179,6 @@ def delete_old_image_on_update(sender, instance, **kwargs):
     if instance.pk:
         instance.delete_old_image()
 
-# SRP: OrderHistory model is responsible only for order history information
 class OrderHistory(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='order_history')
     order_number = models.CharField(max_length=20)
@@ -181,13 +190,4 @@ class OrderHistory(models.Model):
 
     class Meta:
         ordering = ['-order_date']
-    
-    # Design Principles Legend
-    # OCP: The Open-Closed Principle
-    # LSP: The Lispov Substitution Principle
-    # DIP: The Dependency Inversion Principle
-    # ISP: The Interface Segregation Principle
-    # REP: The Reuse/Release Equivalency Principle
-    # CCP: The Common Closure Principle
-    # CRP: The Common Reuse Principle
     
