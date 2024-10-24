@@ -2,13 +2,11 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django.contrib.auth.forms import PasswordChangeForm
-from .models import Student, Faculty, UserProfile, Account
+from .models import Student, Faculty, UserProfile, Account, Address
 from django.core.exceptions import ValidationError
 
 Account = get_user_model()
 
-# SRP: RegistrationForm is responsible only for common user registration fields
-# OCP: Can be extended for different user types without modification
 class RegistrationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
@@ -37,8 +35,6 @@ class RegistrationForm(forms.ModelForm):
             self.fields[field].widget.attrs['class'] = 'form-control'
                 
                       
-# SRP: StudentRegistrationForm is responsible only for student-specific fields
-# ISP: Provides only the fields needed for student registration
 class StudentRegistrationForm(forms.ModelForm):
     class Meta:
         model = Student
@@ -53,8 +49,6 @@ class StudentRegistrationForm(forms.ModelForm):
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 
-# SRP: FacultyRegistrationForm is responsible only for faculty-specific fields
-# ISP: Provides only the fields needed for faculty registration
 class FacultyRegistrationForm(forms.ModelForm):
     class Meta:
         model = Faculty
@@ -68,7 +62,6 @@ class FacultyRegistrationForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
-# SRP: LoginForm is responsible only for login fields
 class LoginForm(forms.Form):
     email = forms.EmailField(widget=forms.EmailInput(attrs={
         'placeholder': 'Enter Email',
@@ -84,11 +77,17 @@ class LoginForm(forms.Form):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
      
-            
-# SRP: UserProfileForm is responsible only for user profile fields         
+# Updated 10/23      
 class UserProfileForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
+    
+    address_line1 = forms.CharField(max_length=100, required=False)
+    address_line2 = forms.CharField(max_length=100, required=False)
+    city = forms.CharField(max_length=50, required=False)
+    state = forms.CharField(max_length=50, required=False)
+    country = forms.CharField(max_length=50, required=False)
+    zipcode = forms.CharField(max_length=10, required=False)
 
     class Meta:
         model = UserProfile
@@ -120,10 +119,27 @@ class UserProfileForm(forms.ModelForm):
         
         # If an instance is provided, populate fields with existing data
         if self.instance and self.instance.pk:
+            # Get user data
             self.fields['first_name'].initial = self.instance.user.first_name
             self.fields['last_name'].initial = self.instance.user.last_name
+            
+            # Try to get address data
+            try:
+                address = self.instance.user.address
+                self.fields['address_line1'].initial = address.address_line1
+                self.fields['address_line2'].initial = address.address_line2
+                self.fields['city'].initial = address.city
+                self.fields['state'].initial = address.state
+                self.fields['country'].initial = address.country
+                self.fields['zipcode'].initial = address.zipcode
+            except (AttributeError, Address.DoesNotExist):
+                pass
+            
+            # Get UserProfile data
             for field in self.fields:
-                if field not in ['first_name', 'last_name', 'profile_picture']:
+                if field not in ['first_name', 'last_name', 'profile_picture', 
+                               'address_line1', 'address_line2', 'city', 'state', 
+                               'country', 'zipcode']:
                     self.fields[field].initial = getattr(self.instance, field)
 
     def save(self, commit=True):
@@ -137,6 +153,17 @@ class UserProfileForm(forms.ModelForm):
         if commit:
             user.save()
             user_profile.save()
+            
+            # Create or update Address
+            address, created = Address.objects.get_or_create(user=user)
+            address.address_line1 = self.cleaned_data['address_line1']
+            address.address_line2 = self.cleaned_data['address_line2']
+            address.city = self.cleaned_data['city']
+            address.state = self.cleaned_data['state']
+            address.country = self.cleaned_data['country']
+            address.zipcode = self.cleaned_data['zipcode']
+            address.save()
+            
         return user_profile
     
     

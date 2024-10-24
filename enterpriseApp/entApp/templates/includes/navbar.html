@@ -1,6 +1,5 @@
 {% load static %}
 
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Fullerton Black Market</a>
@@ -30,17 +29,17 @@
                 </li>
             </ul>
             <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link position-relative" href="{%url 'cart_detail'%}">
-                    <span class="cart-icon-wrapper">
-                        <i class="fas fa-shopping-cart"></i>
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="{%url 'cart_detail'%}">
+                        <span class="cart-icon-wrapper">
+                            <i class="fas fa-shopping-cart"></i>
                             <span class="cart-badge badge rounded-pill bg-danger">
-                            {{ cart_item_count }}
-                            <span class="visually-hidden">items in cart</span>
+                                {{ cart_item_count }}
+                                <span class="visually-hidden">items in cart</span>
+                            </span>
                         </span>
-                    </span>
-                    <span class="d-none d-lg-inline ms-1">Cart</span>
-                  </a>
+                        <span class="d-none d-lg-inline ms-1">Cart</span>
+                    </a>
                 </li>
                 {% if user.is_authenticated %}
                 <li class="nav-item dropdown">
@@ -55,6 +54,12 @@
                     <ul class="dropdown-menu" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="{% url 'user_profile' %}">Edit Profile</a></li>
                         <li><a class="dropdown-item" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        {% if user.is_superuser or user.is_admin %}
+                        <li><a class="dropdown-item" href="{% url 'admin_dashboard' %}">
+                            <i class="fas fa-user-shield me-2"></i>Admin Dashboard
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% endif %}
                         <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                     </ul>
                 </li>

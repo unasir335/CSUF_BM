@@ -51,14 +51,12 @@
                 <table class="table table-sm">
                     <tr>
                         <td>Subtotal:</td>
-                        <td class="text-right">${{ cart.total|floatformat:2 }}</td>
+                        <td class="text-right">${{ cart.cart_total|floatformat:2 }}</td>
                     </tr>
-                    {% if cart.tax %}
                     <tr>
                         <td>Tax ({{ cart.tax_rate|floatformat:2 }}%):</td>
                         <td class="text-right">${{ cart.tax|floatformat:2 }}</td>
                     </tr>
-                    {% endif %}
                     <tr class="font-weight-bold">
                         <td>Total:</td>
                         <td class="text-right">${{ cart.total_with_tax|floatformat:2 }}</td>

@@ -14,17 +14,25 @@ def cart_middleware(get_response):
         return response
     return middleware
 
-# Added 10/18
+    
+#updated 10/23 /expanded to include tax
 def cart_context_processor(request):
     cart = getattr(request, 'cart', None)
-    if cart is None:
-        cart = get_or_create_cart(request)
+    if cart:
+        return {
+            'cart_item_count': cart.item_count,
+            'cart_total': cart.cart_total,
+            'cart_tax': cart.tax,
+            'cart_total_with_tax': cart.total_with_tax,
+        }
     return {
-        'cart_item_count': cart.item_count,
-        'cart_total': cart.total,
+        'cart_item_count': 0,
+        'cart_total': 0,
+        'cart_tax': 0,
+        'cart_total_with_tax': 0
     }
-    
-#updated 10/18
+
+#10/23 updated to reflect changes
 def get_or_create_cart(request):
     if request.user.is_authenticated:
         cart, created = Cart.objects.get_or_create(user=request.user)
@@ -56,26 +64,17 @@ def add_to_cart(request, product_id):
     messages.success(request, f"{quantity} {product.name}(s) added to your cart.")
     return redirect('product_detail', category_slug=product.category.slug, product_slug=product.slug)
 
-
 def cart_detail(request):
     cart = get_or_create_cart(request)
+    cart_items = cart.items.all()
     context = {
-        'cart': cart
+        'cart': cart,
+        'cart_items': cart_items,
+        'cart_total': cart.cart_total,  # Added cart_total explicitly
+        'item_count': cart.item_count
     }
     return render(request, 'cart/cart_detail.html', context)
 
-
-#Added 10/18
-def cart_context_processor(request):
-    cart = getattr(request, 'cart', None)
-    if cart:
-        return {
-            'cart_item_count': cart.item_count,
-            'cart_total': cart.total,
-        }
-    return {'cart_item_count': 0, 'cart_total': 0}
-
-#UPDATED 10/17
 @require_POST
 def update_cart(request, item_id):
     cart = get_or_create_cart(request)
@@ -119,4 +118,3 @@ def merge_carts(request):
             pass
     
     return redirect('cart_detail')
-

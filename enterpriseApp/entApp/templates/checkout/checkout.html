@@ -1,31 +1,533 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h1>Order Complete</h1>
-<p>Thank you for your order!</p>
-<p>Your order number is: {{ order.order_number }}</p>
+<div class="checkout-page-container mt-5">
+    <h2 class="mb-4">Checkout</h2>
+    
+    <div class="row">
+        <!-- Order Form -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Error Summary Section -->
+                    {% if order_form.errors or payment_form.errors or order_form.non_field_errors or payment_form.non_field_errors %}
+                    <div class="alert alert-danger mb-4">
+                        <h5 class="alert-heading">Please correct the following errors:</h5>
+                        <ul class="mb-0">
+                            {% for error in order_form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                            {% for error in payment_form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                            {% for field in order_form %}
+                                {% if field.errors %}
+                                    <li>{{ field.label }}: {{ field.errors|join:', ' }}</li>
+                                {% endif %}
+                            {% endfor %}
+                            {% for field in payment_form %}
+                                {% if field.errors %}
+                                    <li>{{ field.label }}: {{ field.errors|join:', ' }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
 
-<h2>Order Details</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Price</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in ordered_products %}
-        <tr>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.product_price }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Shipping Information -->
+                        <div class="shipping-section mb-4">
+                            <h3 class="card-title mb-3">Shipping Information</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.first_name.id_for_label }}" class="form-label">First Name</label>
+                                        {{ order_form.first_name }}
+                                        {% if order_form.first_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.first_name.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                                        {{ order_form.last_name }}
+                                        {% if order_form.last_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.last_name.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
 
-<p>Total: {{ order.order_total }}</p>
-<p>Tax: {{ order.tax }}</p>
-<p>Grand Total: {{ order.order_total|add:order.tax }}</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.email.id_for_label }}" class="form-label">Email</label>
+                                        {{ order_form.email }}
+                                        {% if order_form.email.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.email.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.phone.id_for_label }}" class="form-label">Phone</label>
+                                        {{ order_form.phone }}
+                                        {% if order_form.phone.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.phone.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="{{ order_form.address_line_1.id_for_label }}" class="form-label">Address Line 1</label>
+                                {{ order_form.address_line_1 }}
+                                {% if order_form.address_line_1.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ order_form.address_line_1.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="{{ order_form.address_line_2.id_for_label }}" class="form-label">Address Line 2</label>
+                                {{ order_form.address_line_2 }}
+                                {% if order_form.address_line_2.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ order_form.address_line_2.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.city.id_for_label }}" class="form-label">City</label>
+                                        {{ order_form.city }}
+                                        {% if order_form.city.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.city.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.state.id_for_label }}" class="form-label">State</label>
+                                        {{ order_form.state }}
+                                        {% if order_form.state.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.state.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.country.id_for_label }}" class="form-label">Country</label>
+                                        {{ order_form.country }}
+                                        {% if order_form.country.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.country.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.zipcode.id_for_label }}" class="form-label">ZIP Code</label>
+                                        {{ order_form.zipcode }}
+                                        {% if order_form.zipcode.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.zipcode.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Billing Section Toggle -->
+                        <div class="form-check mb-3">
+                            {{ order_form.use_shipping_address_for_billing }}
+                            <label class="form-check-label" for="same_billing_address">
+                                Use shipping address for billing
+                            </label>
+                        </div>
+
+                        <!-- Billing Information -->
+                        <div class="billing-section mb-4">
+                            <h3 class="card-title mb-3">Billing Information</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.billing_first_name.id_for_label }}" class="form-label">First Name</label>
+                                        {{ order_form.billing_first_name }}
+                                        {% if order_form.billing_first_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.billing_first_name.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.billing_last_name.id_for_label }}" class="form-label">Last Name</label>
+                                        {{ order_form.billing_last_name }}
+                                        {% if order_form.billing_last_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.billing_last_name.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="{{ order_form.billing_address_line_1.id_for_label }}" class="form-label">Address Line 1</label>
+                                {{ order_form.billing_address_line_1 }}
+                                {% if order_form.billing_address_line_1.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ order_form.billing_address_line_1.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="{{ order_form.billing_address_line_2.id_for_label }}" class="form-label">Address Line 2</label>
+                                {{ order_form.billing_address_line_2 }}
+                                {% if order_form.billing_address_line_2.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ order_form.billing_address_line_2.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.billing_city.id_for_label }}" class="form-label">City</label>
+                                        {{ order_form.billing_city }}
+                                        {% if order_form.billing_city.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.billing_city.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.billing_state.id_for_label }}" class="form-label">State</label>
+                                        {{ order_form.billing_state }}
+                                        {% if order_form.billing_state.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.billing_state.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.billing_country.id_for_label }}" class="form-label">Country</label>
+                                        {{ order_form.billing_country }}
+                                        {% if order_form.billing_country.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.billing_country.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ order_form.billing_zipcode.id_for_label }}" class="form-label">ZIP Code</label>
+                                        {{ order_form.billing_zipcode }}
+                                        {% if order_form.billing_zipcode.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ order_form.billing_zipcode.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Information -->
+                        <div class="payment-section mb-4">
+                            <h3 class="card-title mb-3">Payment Information</h3>
+                            
+                            <div class="form-group mb-3">
+                                <label for="card_type" class="form-label">Card Type</label>
+                                {{ payment_form.card_type }}
+                                {% if payment_form.card_type.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ payment_form.card_type.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        
+                            <div class="form-group mb-3">
+                                <label for="card_number" class="form-label">Card Number</label>
+                                {{ payment_form.card_number }}
+                                {% if payment_form.card_number.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ payment_form.card_number.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Expiration Date</label>
+                                        <div class="d-flex">
+                                            <div class="me-2">
+                                                {{ payment_form.expiry_month }}
+                                                {% if payment_form.expiry_month.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ payment_form.expiry_month.errors|striptags }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                {{ payment_form.expiry_year }}
+                                                {% if payment_form.expiry_year.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ payment_form.expiry_year.errors|striptags }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="cvv" class="form-label">CVV</label>
+                                        {{ payment_form.cvv }}
+                                        {% if payment_form.cvv.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ payment_form.cvv.errors|striptags }}
+                                            </div>
+                                        {% endif %}
+                            </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if order_form.order_note %}
+                        <div class="form-group mb-3">
+                            <label for="{{ order_form.order_note.id_for_label }}">Order Notes</label>
+                            {{ order_form.order_note }}
+                            {% if payment_form.order_note.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ payment_form.order_note.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <button type="submit" class="btn btn-primary">Place Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Order Summary</h3>
+                    {% for item in cart_items %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>{{ item.product.name }} x {{ item.quantity }}</span>
+                            <span>${{ item.subtotal|floatformat:2 }}</span>
+                        </div>
+                    {% endfor %}
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <strong>Subtotal:</strong>
+                        <span>${{ cart_total|floatformat:2 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <strong>Tax:</strong>
+                        <span>${{ tax|floatformat:2 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <strong>Total:</strong>
+                        <span class="text-primary h5 mb-0">${{ total_with_tax|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block page_script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Billing address toggle functionality
+        const sameAddressCheckbox = document.getElementById('same_billing_address');
+        const billingFields = document.querySelectorAll('.billing-field');
+        const billingSection = document.querySelector('.billing-section');
+    
+        function toggleBillingFields() {
+            const isChecked = sameAddressCheckbox.checked;
+            billingSection.style.display = isChecked ? 'none' : 'block';
+            
+            billingFields.forEach(field => {
+                field.disabled = isChecked;
+                if (isChecked) {
+                    const shippingFieldName = field.name.replace('billing_', '');
+                    const shippingField = document.querySelector(`[name="${shippingFieldName}"]`);
+                    if (shippingField) {
+                        field.value = shippingField.value;
+                    }
+                }
+            });
+        }
+    
+        // Initial state
+        toggleBillingFields();
+        
+        // Handle checkbox changes
+        sameAddressCheckbox.addEventListener('change', toggleBillingFields);
+    
+        // Update billing fields when shipping fields change
+        document.querySelectorAll('.shipping-field').forEach(field => {
+            field.addEventListener('change', function() {
+                if (sameAddressCheckbox.checked) {
+                    const billingField = document.querySelector(`[name="billing_${field.name}"]`);
+                    if (billingField) {
+                        billingField.value = field.value;
+                    }
+                }
+            });
+        });
+    
+        // Form submission handling
+        const checkoutForm = document.querySelector('form');
+        const submitButton = document.querySelector('button[type="submit"]');
+        let isSubmitting = false;
+    
+        checkoutForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Always prevent default form submission
+    
+            if (isSubmitting) {
+                return;
+            }
+    
+            try {
+                isSubmitting = true;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing...';
+    
+                const formData = new FormData(checkoutForm);
+                
+                const response = await fetch(checkoutForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    credentials: 'same-origin' // Include cookies
+                });
+    
+                const data = await response.json();
+    
+                if (data.success) {
+                    // On success, redirect to the order complete page
+                    window.location.href = data.redirect_url;
+                } else {
+                    // Reset submission state
+                    isSubmitting = false;
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = 'Place Order';
+    
+                    // Handle form errors
+                    if (data.errors) {
+                        // Clear previous error messages
+                        document.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+                        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    
+                        // Display new error messages
+                        Object.entries(data.errors).forEach(([field, errors]) => {
+                            const input = document.querySelector(`[name="${field}"]`);
+                            if (input) {
+                                input.classList.add('is-invalid');
+                                const errorDiv = document.createElement('div');
+                                errorDiv.className = 'invalid-feedback d-block';
+                                errorDiv.textContent = errors.join(', ');
+                                input.parentNode.appendChild(errorDiv);
+                            }
+                        });
+    
+                        // Scroll to the first error
+                        const firstError = document.querySelector('.is-invalid');
+                        if (firstError) {
+                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+    
+                    // Handle general error message
+                    if (data.error) {
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-danger mt-3';
+                        alertDiv.textContent = data.error;
+                        checkoutForm.insertBefore(alertDiv, checkoutForm.firstChild);
+    
+                        // Remove alert after 5 seconds
+                        setTimeout(() => {
+                            alertDiv.remove();
+                        }, 5000);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                isSubmitting = false;
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Place Order';
+    
+                // Show network error message
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger mt-3';
+                alertDiv.textContent = 'Network error occurred. Please try again.';
+                checkoutForm.insertBefore(alertDiv, checkoutForm.firstChild);
+    
+                // Remove alert after 5 seconds
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 5000);
+            }
+        });
+    
+        // Add validation class to fields on blur
+        checkoutForm.querySelectorAll('input, select, textarea').forEach(field => {
+            field.addEventListener('blur', () => {
+                if (field.value.trim()) {
+                    field.classList.add('is-valid');
+                    field.classList.remove('is-invalid');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
 {% endblock %}
