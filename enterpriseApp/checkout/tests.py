@@ -4,6 +4,7 @@ from .models import CategoryItem, OrderHistory
 from django.contrib.auth import get_user_model
 
 # Create your tests here. (Updated 10/26)
+# NOTE: Test cases are not finished. 
 
 User = get_user_model()
 
