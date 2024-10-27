@@ -11,8 +11,16 @@ class CartViewTests(TestCase):
         """
         Create a test user, a test product, and a test cart.
         """
-        self.user = User.objects.create_user(username='testuser', email='test@example.com', password='password')
-        self.product = Product.objects.create(name='Sample Product', price=10.00, stock=100)  # Adjust based on your Product model
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='password'
+        )
+        self.product = Product.objects.create(
+            name='Sample Product',
+            price=10.00,
+            stock=100  # Adjust based on your Product model
+        )
         self.cart = Cart.objects.create(user=self.user)  # Create a cart for the user
         self.client.login(username='testuser', password='password')
 
@@ -52,5 +60,10 @@ class CartViewTests(TestCase):
         Ensure the cart total is calculated correctly.
         """
         cart_item1 = CartItem.objects.create(cart=self.cart, product=self.product, quantity=2)
-        cart_item2 = CartItem.objects.c
-
+        cart_item2 = CartItem.objects.create(cart=self.cart, product=self.product, quantity=3)
+        
+        expected_total = (cart_item1.quantity + cart_item2.quantity) * self.product.price
+        response = self.client.get(reverse('cart'))
+        
+        # Assuming you render the total in the cart template with a context variable 'cart_total'
+        self.assertContains(response, f'Total: {expected_total:.2f}')  # Adjust the total message as necessary
