@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1>Welcome to Your Dashboard, {{ full_name }}!</h1>
+    
+    <div class="row mt-4">
+        <!-- User Information Card -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">User Information</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>User Type:</strong> 
+                        <span class="badge {% if user_type == 'Superuser' %}bg-danger
+                            {% elif user_type == 'Admin' %}bg-warning
+                            {% elif user_type == 'Faculty' %}bg-info
+                            {% elif user_type == 'Student' %}bg-success
+                            {% else %}bg-secondary{% endif %}">
+                            {{ user_type }}
+                        </span>
+                    </p>
+                    <p><strong>Email:</strong> {{ email }}</p>
+                    <p><strong>Phone:</strong> {{ phone_number }}</p>
+                    <p><strong>Joined:</strong> {{ date_joined|date:"F d, Y" }}</p>
+                    <p><strong>Last Login:</strong> {{ last_login|date:"F d, Y H:i" }}</p>
+                    
+                    {% if user_type == 'Student' %}
+                        <hr>
+                        <h6 class="mb-3">Student Information</h6>
+                        <p><strong>Student ID:</strong> {{ student_id }}</p>
+                        <p><strong>Major:</strong> {{ major }}</p>
+                        <p><strong>Year:</strong> {{ year }}</p>
+                    {% elif user_type == 'Faculty' %}
+                        <hr>
+                        <h6 class="mb-3">Faculty Information</h6>
+                        <p><strong>Faculty ID:</strong> {{ faculty_id }}</p>
+                        <p><strong>Department:</strong> {{ department }}</p>
+                        <p><strong>Position:</strong> {{ position }}</p>
+                    {% elif user_type == 'Admin' or user_type == 'Superuser' %}
+                        <hr>
+                        <h6 class="mb-3">Administrative Access</h6>
+                        <p><a href="{% url 'admin_dashboard' %}" class="btn btn-primary">
+                            <i class="fas fa-user-shield me-2"></i>Access Admin Dashboard
+                        </a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Card -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Order Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Total Orders:</strong> {{ orders_count }}</p>
+                    <p><strong>Total Spent:</strong> ${{ total_spent|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order History Section -->
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Order Date</th>
+                <th>Order Number</th>
+                <th>Status</th>
+                <th>Subtotal</th>
+                <th>Tax</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
+                    <td>{{ order.order_number }}</td>
+                    <td>
+                        <span class="badge {% if order.status == 'DELIVERED' %}bg-success
+                            {% elif order.status == 'PROCESSING' %}bg-primary
+                            {% elif order.status == 'SHIPPED' %}bg-info
+                            {% elif order.status == 'CANCELLED' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>${{ order.get_subtotal|floatformat:2 }}</td>
+                    <td>${{ order.get_tax_amount|floatformat:2 }}</td>
+                    <td>${{ order.get_total_with_tax|floatformat:2 }}</td>
+                    <td>
+                        <a href="{% url 'order_complete' order_number=order.order_number %}" 
+                           class="btn btn-sm btn-outline-primary">
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+
+        </tfoot>
+    </table>
+</div>
+</div>
+
+{% block extra_js %}
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // You could add sorting functionality here if needed
+    });
+</script>
+{% endblock %}
+
+{% endblock %}
