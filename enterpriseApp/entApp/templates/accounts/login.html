@@ -25,7 +25,9 @@
                         <button type="submit" class="btn btn-primary btn-block">Login</button>
                     </form>
                     <div class="mt-3 text-center">
-                        {% comment %} <a href="{% url 'password_reset' %}" class="mr-3">Forgot Password?</a> {% endcomment %}
+                        <div class="form-group">
+                            <a href="{% url 'password_recovery' %}">Forgot Password?</a>
+                        </div>
                     </div>
                 </div>
             </div>

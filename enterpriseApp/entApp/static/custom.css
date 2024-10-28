@@ -1,16 +1,297 @@
-/* NAVBAR CSS */
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');  /* For headings - looks like old typewriter */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');  /* For body text - mechanical look */
 
-.nav-link {
-    position: relative;
+:root {
+    --primary-black: #000000;
+    --primary-blue: #0F6292;
+    --accent-green: #16FF00;
+    --accent-yellow: #FFED00;
+    --dark-gray: #1a1a1a;
+    --medium-gray: #333333;
+    --text-light: #e0e0e0;      /* Added for main text */
+    --text-muted: #9e9e9e;      /* Added for secondary text */
+    --text-bright: #ffffff;      /* Added for emphasized text */
 }
 
+/* Base text color updates */
+body {
+    background-color: var(--dark-gray);
+    color: var(--text-light);
+    font-family: 'Roboto Mono', monospace;
+    line-height: 1.6;
+}
+
+/* Card updates */
+.card {
+    background-color: var(--primary-black);
+    border: 1px solid var(--primary-blue);
+    transition: transform 0.3s ease;
+    color: var(--text-light);
+}
+
+.card-body {
+    color: var(--text-light);
+}
+
+.card-header {
+    background-color: var(--primary-blue);
+    color: var(--text-bright);
+    font-family: 'Special Elite', cursive;
+}
+
+/* Text elements */
+p {
+    color: var(--text-light);
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+strong, b {
+    color: var(--text-bright);
+    font-weight: 700;
+}
+
+/* Form elements */
+.form-control {
+    background-color: var(--medium-gray);
+    border: 1px solid var(--primary-blue);
+    color: var(--text-light);
+}
+
+.form-control:focus {
+    background-color: var(--dark-gray);
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 0.2rem rgba(22, 255, 0, 0.25);
+    color: var(--text-light);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-label {
+    color: var(--text-bright);
+    font-weight: 500;
+}
+
+/* Recommendation text */
+.recommendation-text {
+    color: var(--text-light);
+}
+
+/* Price display */
+.price-section .text-decoration-line-through {
+    color: var(--text-muted);
+}
+
+/* Description text */
+.details-section p {
+    color: var(--text-light);
+}
+
+/* Reviews section */
+.review-card {
+    color: var(--text-light);
+}
+
+.review-card .card-text {
+    color: var(--text-light);
+}
+
+/* Alerts with better contrast */
+.alert {
+    color: var(--text-bright);
+}
+
+.alert-success {
+    background-color: rgba(22, 255, 0, 0.15);
+    border-left-color: var(--accent-green);
+    color: var(--text-bright);
+}
+
+.alert-warning {
+    background-color: rgba(255, 237, 0, 0.15);
+    border-left-color: var(--accent-yellow);
+    color: var(--text-bright);
+}
+
+/* Better dropdown contrast */
+.dropdown-menu {
+    background-color: var(--dark-gray);
+    border: 1px solid var(--primary-blue);
+}
+
+.dropdown-item {
+    color: var(--text-light);
+}
+
+.dropdown-item:hover {
+    background-color: var(--primary-blue);
+    color: var(--text-bright);
+}
+
+/* Button text colors */
+.btn-primary {
+    color: var(--text-bright);
+}
+
+.btn-primary:hover {
+    color: var(--primary-black);
+}
+
+/* Table text */
+.table {
+    color: var(--text-light);
+}
+
+.table th {
+    color: var(--text-bright);
+}
+
+/* Star rating adjustments */
+.star-rating > label {
+    color: #4d4d4d;  /* Darker gray for empty stars */
+}
+
+.star-rating > input:checked ~ label,
+.star-rating > input:hover ~ label {
+    color: var(--accent-yellow);  /* Using theme color for filled stars */
+}
+
+/* Badge text */
+.badge {
+    color: var(--primary-black);
+    font-weight: 600;
+}
+
+/* Error messages */
+.text-danger {
+    color: #ff6b6b !important;
+}
+
+.errorlist {
+    color: #ff6b6b;
+}
+
+/* Links */
+a {
+    color: var(--accent-green);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--accent-yellow);
+    text-decoration: none;
+}
+
+/* Quantity input specific styling */
+input[type="number"] {
+    background-color: var(--medium-gray);
+    color: var(--text-light);
+    border: 1px solid var(--primary-blue);
+}
+
+/* Optional: Add subtle text shadows to headings for better readability */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--accent-yellow);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Navbar base */
+.navbar {
+    background-color: var(--primary-black) !important;
+    border-bottom: 3px solid var(--primary-blue);
+    padding: 1rem 0;
+}
+
+/* Align cart and user section */
+.navbar-nav {
+    align-items: center;
+}
+
+/* Ensure cart and username are vertically centered */
+.navbar-nav .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+/* Specific alignment for cart link */
+.nav-link.position-relative {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+/* Brand/Logo */
+.navbar-brand {
+    font-family: 'Special Elite', cursive;
+    font-size: 1.8rem;
+    color: var(--accent-yellow) !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Navigation links */
+.nav-link {
+    position: relative;
+    color: #ffffff !important;
+    transition: all 0.3s ease;
+    font-family: 'Roboto Mono', monospace;
+    padding: 0.5rem 1rem;
+}
+
+.nav-link:hover {
+    color: var(--accent-green) !important;
+    text-shadow: 0 0 8px rgba(22, 255, 0, 0.3);
+}
+
+.nav-link.active {
+    color: var(--accent-yellow) !important;
+}
+
+/* Dropdown styling */
+.dropdown-menu {
+    background-color: var(--dark-gray);
+    border: 1px solid var(--primary-blue);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    color: #ffffff;
+    font-family: 'Roboto Mono', monospace;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--primary-blue);
+    color: var(--accent-yellow);
+}
+
+.dropdown-divider {
+    border-top: 1px solid var(--primary-blue);
+    opacity: 0.5;
+}
+
+/* Shopping cart styles */
 .cart-icon-wrapper {
     position: relative;
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.cart-icon-wrapper:hover {
+    transform: scale(1.1);
 }
 
 .fa-shopping-cart {
     font-size: 1.2rem;
+    color: var(--accent-yellow);
 }
 
 .cart-badge {
@@ -19,21 +300,241 @@
     top: -5px;
     right: -5px;
     padding: 0.25em 0.6em;
+    background-color: var(--accent-green) !important;
+    color: var(--primary-black);
+    box-shadow: 0 0 5px rgba(22, 255, 0, 0.5);
+}
+.d-none.d-lg-inline {
+    margin-left: 0.5rem;
+    line-height: 1;
 }
 
+/* Username dropdown alignment */
+.nav-link.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0.5rem 1rem;
+}
+
+/* User profile section */
+.rounded-circle {
+    border: 2px solid var(--primary-blue);
+    transition: all 0.3s ease;
+    margin: 0 0 0 0.5rem;
+    vertical-align: middle;
+}
+
+.nav-link:hover .rounded-circle {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 10px rgba(22, 255, 0, 0.3);
+}
+
+/* Admin dashboard icon */
+.fa-user-shield {
+    color: var(--accent-yellow);
+}
+
+/* Mobile toggler */
+.navbar-toggler {
+    border-color: var(--primary-blue);
+    background-color: var(--dark-gray);
+    padding: 0.5rem;
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.2rem rgba(15, 98, 146, 0.5);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 237, 0, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.dropdown-toggle::after {
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+/* Responsive styles */
 @media (max-width: 991px) {
+    .navbar-collapse {
+        background-color: var(--dark-gray);
+        padding: 1rem;
+        border-radius: 0 0 8px 8px;
+        border: 1px solid var(--primary-blue);
+        margin-top: 0.5rem;
+    }
+
     .navbar-nav .nav-link {
-        padding-right: 15px;
-        padding-left: 15px;
+        padding: 0.7rem 1rem;
+        border-bottom: 1px solid rgba(15, 98, 146, 0.3);
+    }
+
+    .navbar-nav .nav-item:last-child .nav-link {
+        border-bottom: none;
+    }
+
+    .dropdown-menu {
+        background-color: var(--primary-black);
+        border: none;
+        padding-left: 1.5rem;
     }
 }
 
-/* NAVBAR CSS END */
+/* Desktop hover effects */
+@media (min-width: 992px) {
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        background-color: var(--accent-green);
+        transition: all 0.3s ease;
+    }
 
-/* CARD CUSTOM SIZE - Only applies to store page */
+    .nav-link:hover::after {
+        width: 100%;
+        left: 0;
+    }
+
+    .dropdown-menu {
+        margin-top: 0.5rem;
+        border-radius: 4px;
+    }
+}
+
+/* Animation for dropdown menus */
+.dropdown-menu.show {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Container styling */
+.container {
+    background-color: var(--medium-gray);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Special Elite', cursive;
+    color: var(--accent-yellow);
+    margin-bottom: 1.5rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-blue);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(22, 255, 0, 0.2);
+}
+
+/* Cards */
+.card {
+    background-color: var(--primary-black);
+    border: 1px solid var(--primary-blue);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background-color: var(--primary-blue);
+    color: white;
+    font-family: 'Special Elite', cursive;
+}
+
+/* Alerts */
+.alert {
+    border: none;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    background-color: rgba(22, 255, 0, 0.1);
+    border-left-color: var(--accent-green);
+}
+
+.alert-warning {
+    background-color: rgba(255, 237, 0, 0.1);
+    border-left-color: var(--accent-yellow);
+}
+
+/* Footer */
+footer {
+    background-color: var(--primary-black);
+    color: #ffffff;
+    padding: 2rem 0;
+    border-top: 3px solid var(--primary-blue);
+}
+
+/* Tables */
+.table {
+    color: #ffffff;
+    background-color: var(--medium-gray);
+}
+
+.table thead th {
+    background-color: var(--primary-black);
+    border-bottom: 2px solid var(--primary-blue);
+}
+
+/* Form elements */
+.form-control {
+    background-color: var(--medium-gray);
+    border: 1px solid var(--primary-blue);
+    color: #ffffff;
+}
+
+.form-control:focus {
+    background-color: var(--dark-gray);
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 0.2rem rgba(22, 255, 0, 0.25);
+}
+
+/* Custom animations */
+@keyframes glow {
+    0% { text-shadow: 0 0 10px var(--accent-green); }
+    50% { text-shadow: 0 0 20px var(--accent-green); }
+    100% { text-shadow: 0 0 10px var(--accent-green); }
+}
+
+.glow-effect {
+    animation: glow 2s infinite;
+}
+
+/* store.html */
+.store-page-container .card {
+    height: 100%;  /* Allow card to grow with content */
+}
+
 .store-page-container .card-img-top {
     width: 100%;
-    height: 200px; 
+    height: 200px;
     object-fit: cover;
     object-position: center;
 }
@@ -41,15 +542,42 @@
 .store-page-container .card-body {
     display: flex;
     flex-direction: column;
-    height: 150px; 
+    height: auto;  /* Remove fixed height */
+    padding: 1.25rem;
 }
 
 .store-page-container .card-title {
-    flex-grow: 1;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
 }
 
-.store-page-container .btn-view-details {
-    margin-top: auto;
+.store-page-container .recommendations-preview {
+    margin: 0.5rem 0;
+    font-size: 0.85rem;
+}
+
+.store-page-container .recommendation-item {
+    margin-top: 0.25rem;
+    line-height: 1.3;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 1200px) {
+    .row-cols-md-3 > * {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .row-cols-md-3 > * {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .store-page-container .card-img-top {
+        height: 250px;
+    }
 }
 
 /* checkout.html */
@@ -80,4 +608,114 @@
 .checkout-page-container .billing-section {
     padding-top: 1rem;
     border-top: 1px solid #dee2e6;
+}
+
+/* Star Rating System */
+.star-rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.star-rating > input {
+    display: none;
+}
+
+.star-rating > label {
+    position: relative;
+    width: 1.1em;
+    font-size: 1.5rem;
+    color: #ddd;
+    cursor: pointer;
+}
+
+.star-rating > label::before {
+    content: "\f005"; /* Font Awesome star */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+}
+
+.star-rating > input:checked ~ label,
+.star-rating > input:hover ~ label {
+    color: #f8b739;
+}
+
+/* Existing reviews stars styling */
+.existing-rating {
+    color: #f8b739;
+}
+
+.existing-rating .fa-star {
+    margin: 0 1px;
+}
+
+/* Review card styling */
+.review-card {
+    transition: all 0.3s ease;
+}
+
+.review-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Product Detail Specific Styles */
+.product-detail-container {
+    max-width: 1200px;
+}
+
+.product-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.product-image-container {
+    background-color: var(--primary-black);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.recommendation-card {
+    transition: all 0.3s ease;
+}
+
+.recommendation-card:hover {
+    transform: translateX(5px);
+}
+
+.recommendation-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .product-title {
+        font-size: 1.5rem;
+    }
+    
+    .product-image-container {
+        margin: -1rem -1rem 1rem -1rem;
+        border-radius: 0;
+    }
+    
+    .container {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .cart-section form {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .cart-section .form-group {
+        width: 100%;
+    }
+    
+    .cart-section .btn {
+        width: 100%;
+    }
 }

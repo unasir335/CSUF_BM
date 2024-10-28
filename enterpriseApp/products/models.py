@@ -25,6 +25,7 @@ class Category(models.Model):
             self.slug = slugify(self.name)
         super(Category, self).save(*args, **kwargs)
 
+
 class Product(models.Model):
     name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(max_length=200, unique=True)
@@ -42,6 +43,20 @@ class Product(models.Model):
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0)
     featured = models.BooleanField(default=False)
 
+    PRODUCT_TYPES = (
+        ('physical', 'Physical Product'),
+        ('digital', 'Digital Product'),
+    )
+    product_type = models.CharField(max_length=20, choices=PRODUCT_TYPES, default='physical')
+    
+    @property
+    def is_digital(self):
+        return False
+    
+    @property
+    def discounted_price(self):
+        return self.price * (1 - self.discount / 100)
+    
     def get_url(self):
         return reverse('product_detail', args=[self.category.slug, self.slug])
 
@@ -51,7 +66,9 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-        super(Product, self).save(*args, **kwargs)
+        if self.product_type == 'digital':
+            self.stock = -1  # Indicates unlimited stock
+        super().save(*args, **kwargs)
 
     @property
     def discounted_price(self):
@@ -80,3 +97,36 @@ class ProductReview(models.Model):
         # Update average rating
         self.product.average_rating = self.product.reviews.aggregate(models.Avg('rating'))['rating__avg']
         self.product.save()
+
+class DigitalProduct(Product):
+    version = models.CharField(max_length=50)
+    download_link = models.URLField(max_length=500)
+    file_size = models.CharField(max_length=50, help_text="e.g., '15 MB'")
+    system_requirements = models.TextField(blank=True)
+    release_notes = models.TextField(blank=True)
+    
+    def save(self, *args, **kwargs):
+        self.stock = -1  # Indicates unlimited stock for digital products
+        super().save(*args, **kwargs)
+    
+    @property
+    def is_digital(self):
+        return True
+    
+    
+class ProductRecommendation(models.Model):
+    product = models.ForeignKey(Product, related_name='recommendations', on_delete=models.CASCADE)
+    faculty = models.ForeignKey('accounts.Faculty', related_name='recommended_products', on_delete=models.CASCADE)
+    recommendation_text = models.TextField(help_text="Share why you recommend this product")
+    is_essential = models.BooleanField(default=False, help_text="Mark if this is essential for your class")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ['product', 'faculty']  # One recommendation per product per faculty
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.product.name} recommended by {self.faculty.user.get_full_name()}"
+        
+        

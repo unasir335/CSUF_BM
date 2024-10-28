@@ -1,33 +1,378 @@
 {% extends "base.html" %}
 {% block title %}{{ single_product.name }}{% endblock %}
-{% block content %}
 
-<div class="container mt-4">
-    <h1>{{ single_product.name }}</h1>
+{% block content %}
+<div class="container product-detail-container mt-4">
+    <div class="row g-4">
+        <!-- Product Header for mobile -->
+        <div class="col-12 d-md-none">
+            <h1 class="product-title">{{ single_product.name }}</h1>
+        </div>
+
+        <!-- Left column with image -->
+        <div class="col-12 col-md-6">
+            <div class="product-image-container">
+                <img src="{{ single_product.image.url }}" 
+                     alt="{{ single_product.name }}" 
+                     class="img-fluid rounded shadow"
+                     style="width: 100%; object-fit: cover;">
+            </div>
+        </div>
+
+        <!-- Right column with details -->
+        <div class="col-12 col-md-6">
+            <!-- Product Header for desktop -->
+            <h1 class="product-title d-none d-md-block">{{ single_product.name }}</h1>
+
+            <!-- Price Section -->
+            <div class="price-section card mb-4">
+                <div class="card-body">
+                    {% if single_product.discount > 0 %}
+                        <div class="d-flex align-items-center">
+                            <span class="text-decoration-line-through text-muted h5 mb-0">${{ single_product.price }}</span>
+                            <span class="badge bg-danger mx-2">{{ single_product.discount }}% OFF</span>
+                            <h3 class="mb-0">${{ single_product.discounted_price }}</h3>
+                        </div>
+                    {% else %}
+                        <h3 class="mb-0">${{ single_product.price }}</h3>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="details-section card mb-4">
+                <div class="card-body">
+                    <p><strong>Description:</strong> {{ single_product.description }}</p>
+                    <p><strong>Category:</strong> {{ single_product.category.name }}</p>
+                    {% if single_product.brand %}
+                        <p><strong>Brand:</strong> {{ single_product.brand }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Faculty Recommendations -->
+            <div class="recommendations-section card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Faculty Recommendations</h4>
+                </div>
+                <div class="card-body">
+                    {% if recommendations %}
+                        <div class="recommendations-carousel">
+                            {% for rec in recommendations %}
+                                <div class="recommendation-card mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">{{ rec.faculty.user.get_full_name }}</h6>
+                                            <small class="text-muted d-block">{{ rec.faculty.department }}</small>
+                                        </div>
+                                        {% if rec.is_essential %}
+                                            <span class="badge bg-warning">Essential for Class</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="recommendation-text mt-2 mb-1">{{ rec.recommendation_text }}</p>
+                                    <small class="text-muted">{{ rec.created_at|date:"F d, Y" }}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No faculty recommendations yet.</p>
+                    {% endif %}
+                </div>
+
+                {% if is_faculty %}
+                    <div class="card-footer">
+                        <form id="recommendationForm" class="recommendation-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ product_id }}">
+                            <div class="mb-3">
+                                <label for="recommendationText" class="form-label">Your Recommendation</label>
+                                <textarea 
+                                    class="form-control" 
+                                    id="recommendationText" 
+                                    name="recommendation_text" 
+                                    rows="3" 
+                                    required>{{ user_recommendation.recommendation_text|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input 
+                                    type="checkbox" 
+                                    class="form-check-input" 
+                                    id="isEssential" 
+                                    name="is_essential" 
+                                    {% if user_recommendation and user_recommendation.is_essential %}checked{% endif %}>
+                                <label class="form-check-label" for="isEssential">
+                                    Essential for Class
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary">
+                                    {% if user_recommendation %}Update{% else %}Add{% endif %} Recommendation
+                                </button>
+
+                                {% if user_recommendation %}
+                                <button type="button" id="removeRecommendation" class="btn btn-danger">
+                                    Remove
+                                </button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Add to Cart Section -->
+            <div class="cart-section card">
+                <div class="card-body">
+                    {% if single_product.is_digital %}
+                        <form class="d-flex justify-content-center gap-3" method="post" action="{% url 'add_to_cart' single_product.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                Add Digital Download to Cart
+                            </button>
+                        </form>
+                    {% else %}
+                        {% if single_product.stock > 0 %}
+                            <form class="d-flex justify-content-center align-items-start gap-3" method="post" action="{% url 'add_to_cart' single_product.id %}">
+                                {% csrf_token %}
+                                <div class="quantity-wrapper" style="width: 120px;">
+                                    <label for="quantity" class="form-label mb-1">Quantity:</label>
+                                    <div class="d-flex flex-column">
+                                        <input 
+                                            type="number" 
+                                            class="form-control form-control-sm mb-1" 
+                                            id="quantity" 
+                                            name="quantity"
+                                            value="1" 
+                                            min="1" 
+                                            max="{{ single_product.stock }}"
+                                        >
+                                        <small class="text-muted" style="font-size: 0.75rem;">
+                                            {{ single_product.stock }} available
+                                        </small>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-4">
+                                    Add to Cart
+                                </button>
+                            </form>
+                        {% else %}
+                            <div class="text-center">
+                                <div class="out-of-stock-badge mb-2">
+                                    <span class="badge bg-danger">Out of Stock</span>
+                                </div>
+                                <form class="d-flex justify-content-center align-items-start gap-3">
+                                    {% csrf_token %}
+                                    <div class="quantity-wrapper" style="width: 120px;">
+                                        <label for="quantity" class="form-label mb-1 text-muted">Quantity:</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control form-control-sm" 
+                                            id="quantity" 
+                                            value="0" 
+                                            disabled
+                                        >
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mt-4" disabled>
+                                        Add to Cart
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row">
-        <div class="col-md-6">
-            <img src="{{ single_product.image.url }}" alt="{{ single_product.name }}" class="img-fluid">
+        <div class="col-12">
+            <h3 class="section-title mb-4">Reviews</h3>
         </div>
-        <div class="col-md-6">
-            <p><strong>Price:</strong> ${{ single_product.price }}</p>
-            <p><strong>Description:</strong> {{ single_product.description }}</p>
-            <p><strong>Category:</strong> {{ single_product.category.name }}</p>
-            <p><strong>Stock:</strong> {{ single_product.stock }}</p>
-            {% if single_product.average_rating %}
-                <p><strong>Average Rating:</strong> {{ single_product.average_rating }}</p>
-            {% endif %}
-            
-            <form action="{% url 'add_to_cart' single_product.id %}" method="post" class="mt-3">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="quantity">Quantity:</label>
-                    <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ single_product.stock }}" class="form-control" style="width: 100px;">
+        
+        <!-- Write Review Section -->
+        <div class="col-md-8">
+            {% if user.is_authenticated %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">{% if user_review %}Edit Your Review{% else %}Write a Review{% endif %}</h5>
+                        
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <form method="post" class="review-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="review_submit" value="1">
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Rating:</label>
+                                <div class="star-rating">
+                                    <input type="radio" id="star5" name="rating" value="5" {% if user_review.rating == 5 %}checked{% endif %} />
+                                    <label for="star5"><i class="fa-solid fa-star"></i></label>
+                                    
+                                    <input type="radio" id="star4" name="rating" value="4" {% if user_review.rating == 4 %}checked{% endif %} />
+                                    <label for="star4"><i class="fa-solid fa-star"></i></label>
+                                    
+                                    <input type="radio" id="star3" name="rating" value="3" {% if user_review.rating == 3 %}checked{% endif %} />
+                                    <label for="star3"><i class="fa-solid fa-star"></i></label>
+                                    
+                                    <input type="radio" id="star2" name="rating" value="2" {% if user_review.rating == 2 %}checked{% endif %} />
+                                    <label for="star2"><i class="fa-solid fa-star"></i></label>
+                                    
+                                    <input type="radio" id="star1" name="rating" value="1" {% if user_review.rating == 1 %}checked{% endif %} />
+                                    <label for="star1"><i class="fa-solid fa-star"></i></label>
+                                </div>
+                                {% if review_form.rating.errors %}
+                                    <div class="text-danger small mt-1">{{ review_form.rating.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Your Review:</label>
+                                {{ review_form.review }}
+                                {% if review_form.review.errors %}
+                                    <div class="text-danger small">{{ review_form.review.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                {% if user_review %}Update Review{% else %}Submit Review{% endif %}
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary mt-2">Add to Cart</button>
-            </form>
+            {% else %}
+                <div class="alert alert-info mb-4">
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="alert-link">Log in</a> to leave a review.
+                </div>
+            {% endif %}
+
+            <!-- Existing Reviews -->
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="review-card card mb-3 {% if review.user == user %}border-primary{% endif %}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <h6 class="mb-0">{{ review.user.get_full_name|default:review.user.username }}</h6>
+                                    <small class="text-muted">{{ review.created_at|date:"F d, Y" }}</small>
+                                </div>
+                                <span class="existing-rating">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            <p class="card-text">{{ review.review }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-light text-center">
+                    No reviews yet. {% if user.is_authenticated %}Be the first to review this product!{% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Rating Summary Column -->
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 1rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Rating Summary</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <h2 class="mb-0 me-2">{{ single_product.average_rating|floatformat:1 }}</h2>
+                        <div class="existing-rating">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= single_product.average_rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="text-muted">Based on {{ reviews|length }} review{{ reviews|length|pluralize }}</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const productId = "{{ product_id }}";  // Use the explicit product_id from context
+    const recommendationForm = document.getElementById('recommendationForm');
+    
+    if (recommendationForm) {
+        recommendationForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            formData.append('is_essential', document.getElementById('isEssential').checked);
+            
+            fetch(`/store/recommendations/toggle/${productId}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+    }
+
+    // Handle recommendation removal
+    const removeButton = document.getElementById('removeRecommendation');
+    if (removeButton) {
+        removeButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to remove your recommendation?')) {
+                fetch(`/store/recommendations/remove/${productId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
 
 {% endblock %}

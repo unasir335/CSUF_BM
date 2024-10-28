@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %} Contact {% endblock %}
+{% block content %}
+
+<br><br>
+<h1>Contact</h1>
+<div class="container">
+  <div class="row justify-content-center">
+    <!-- Text on the left side-->
+    <div class="col-md-7">
+      <div class="left-text">
+        <h4>
+          <i class="fa-solid fa-phone"></i> Phone: 999-999-9999
+        </h4><br>
+        <h4>
+          <i class="fa-solid fa-envelope"></i> Email: 9@gmail.com
+        </h4><br>
+        <h4>
+          <i class="fa-solid fa-location-dot"></i> Address: 800 N State College Blvd, Fullerton, CA 92831
+        </h4><br>
+        <!--Embedded map from google map-->
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6624.567327587564!2d-117.88767822279259!3d33.882347573221175!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80dcd5ce8cc61391%3A0x2b9810bbb94af355!2sCalifornia%20State%20University%2C%20Fullerton!5e0!3m2!1sen!2sus!4v1729838660746!5m2!1sen!2sus"
+          width="100%"
+          height="450"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+    <div class="col-md-5 p-4">
+      <!--Email Support Text-->
+      <form>
+        <div class="mb-3 mt-4">
+          <label for="exampleInputEmail1" class="form-label">Email address</label>
+          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+          <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+        </div>
+        <!--Support Message Box-->
+        <div class="mb-3">
+          <label for="support_message" class="form-label">Message</label>
+          <textarea type="textarea" class="form-control" id="support_message" rows="15"></textarea><br>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        <div class="mb-3 form-check">
+
+
+
+
+{% endblock %}

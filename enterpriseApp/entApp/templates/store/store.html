@@ -1,58 +1,151 @@
-{% extends "base.html" %}
-{% load static %}
-{% block title %}Store{% endblock %}
-
+{% extends "base.html" %} {% load static %} {% block title %}Store{% endblock %} 
 {% block content %}
+
 <div class="container store-page-container">
     <div class="row">
+        <!-- Left Sidebar - Categories and Filters -->
         <div class="col-md-3">
-            <h3>Categories</h3>
-            <ul class="list-group mb-4">
-                <li class="list-group-item {% if not category %}active{% endif %}">
-                    <a href="{% url 'store' %}" class="text-decoration-none {% if not category %}text-white{% endif %}">All Products</a>
-                </li>
-                {% for cat in categories %}
-                <li class="list-group-item {% if category.slug == cat.slug %}active{% endif %}">
-                    <a href="{{ cat.get_url }}" class="text-decoration-none {% if category.slug == cat.slug %}text-white{% endif %}">{{ cat.name }}</a>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        
-        <div class="col-md-9">
-            <form method="get" class="mb-4">
-                <div class="input-group">
-                    {{ sort_form.sort_by }}
-                    <button type="submit" class="btn btn-primary">Sort</button>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Categories</h3>
                 </div>
-            </form>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <a href="{% url 'store' %}" class="text-decoration-none {% if not category %}text-white{% endif %}">
+                                All Products
+                            </a>
+                        </li>
+                        {% for cat in categories %}
+                        <li class="mb-2">
+                            <a href="{{ cat.get_url }}" class="text-decoration-none {% if category.slug == cat.slug %}text-white{% endif %}">
+                                {{ cat.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
 
-            {% if products %}
-                <div class="row row-cols-1 row-cols-md-3 g-4">
-                    {% for product in products %}
-                        <div class="col">
-                            <div class="card h-100">
-                                {% if product.image %}
-                                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-                                {% else %}
-                                    <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" alt="Default product image">
-                                {% endif %}
-                                <div class="card-body">
-                                    <h5 class="card-title"><a href="{{ product.get_url }}" class="text-decoration-none">{{ product.name }}</a></h5>
-                                    <p class="card-text">Price: ${{ product.price }}</p>
-                                    {% if product.average_rating %}
-                                        <p class="card-text">Rating: {{ product.average_rating|floatformat:1 }} / 5</p>
-                                    {% endif %}
-                                    <a href="{{ product.get_url }}" class="btn btn-primary mt-auto">View Details</a>
-                                </div>
+            <!-- Faculty Filters -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Faculty Filters</h3>
+                </div>
+                <div class="card-body">
+                    <form id="facultyFilterForm" method="get">
+                        <!-- Department Filter -->
+                        <div class="mb-3">
+                            <label class="form-label">Department</label>
+                            <select name="department" class="form-select">
+                                <option value="">All Departments</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept }}" {% if selected_department == dept %}selected{% endif %}>
+                                    {{ dept }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Faculty Search -->
+                        <div class="mb-3">
+                            <label class="form-label">Search by Faculty</label>
+                            <input type="text" name="faculty_search" class="form-control" 
+                                   value="{{ faculty_search }}" placeholder="Enter faculty name">
+                        </div>
+
+                        <!-- Recommendation Filters -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="essentialOnly" 
+                                       name="essential_only" {% if essential_only %}checked{% endif %}>
+                                <label class="form-check-label" for="essentialOnly">
+                                    Show Essential Items Only
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="recommendedOnly" 
+                                       name="recommended_only" {% if recommended_only %}checked{% endif %}>
+                                <label class="form-check-label" for="recommendedOnly">
+                                    Show Recommended Items Only
+                                </label>
                             </div>
                         </div>
-                    {% endfor %}
+
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </form>
                 </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-md-9">
+            <!-- Sort Options -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="input-group" style="max-width: 300px;">
+                    {{ sort_form.sort_by }}
+                    <button class="btn btn-outline-secondary" type="submit">Sort</button>
+                </div>
+            </div>
+
+            {% if products %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for product in products %}
+                <div class="col">
+                    <div class="card h-100 position-relative">
+                        {% if product.recommendations.filter.exists %}
+                            {% if product.recommendations.filter.first.is_essential %}
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-danger">Essential</span>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                        {% else %}
+                        <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" alt="Default product image">
+                        {% endif %}
+
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{{ product.get_url }}" class="text-decoration-none">{{ product.name }}</a>
+                            </h5>
+                            <p class="card-text">Price: ${{ product.price }}</p>
+                            
+                            {% if product.recommendations.exists %}
+                            <div class="recommendations-preview">
+                                <small class="text-muted">
+                                    Recommended by {{ product.recommendations.count }} faculty member{{ product.recommendations.count|pluralize }}
+                                </small>
+                                {% for recommendation in product.recommendations.all|slice:":2" %}
+                                <div class="recommendation-item small">
+                                    <strong>{{ recommendation.faculty.user.get_full_name }}</strong>
+                                    <span class="text-muted">({{ recommendation.faculty.department }})</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            {% if product.average_rating %}
+                            <p class="card-text">
+                                <small class="text-muted">Rating: {{ product.average_rating|floatformat:1 }} / 5</small>
+                            </p>
+                            {% endif %}
+                            
+                            <a href="{{ product.get_url }}" class="btn btn-primary mt-2">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
             {% else %}
-                <p>No products available.</p>
+            <div class="alert alert-info">No products available.</div>
             {% endif %}
         </div>
     </div>
 </div>
+
+
+
 {% endblock %}

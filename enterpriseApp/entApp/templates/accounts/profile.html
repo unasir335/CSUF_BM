@@ -1,163 +1,426 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block title %}Edit Profile{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="float-left">Edit Profile</h3>
+<div class="container py-5">
+    <div class="row justify-content-center g-4">
+        <!-- Left Column - Main Profile Form -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary d-flex justify-content-between align-items-center py-3">
+                    <h3 class="text-white mb-0 fs-4">Edit Profile</h3>
+                    {% if user.role %}
+                        <span class="badge bg-light text-primary">{{ user.role }}</span>
+                    {% endif %}
                 </div>
                 <div class="card-body">
-                    <!-- Profile Picture -->
-                    <div class="text-center mb-4">
-                        {% if form.instance.profile_picture %}
-                            <img src="{{ form.instance.profile_picture.url }}" alt="Profile Picture" width="300" height="150">
-                        {% else %}
-                            <img src="{% static 'profile_pics/80x80.png' %}" alt="Default Profile Picture" class="rounded-circle" width="80" height="80">
-                        {% endif %}
-                    </div>
-                    
-                    <form method="post" enctype="multipart/form-data">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                         {% csrf_token %}
                         
-                        <!-- Basic Information Section -->
-                        <h5 class="mb-3">Basic Information</h5>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    {{ form.first_name.label_tag }}
-                                    {{ form.first_name }}
-                                    {% if form.first_name.errors %}
-                                        <span class="small text-danger">{{ form.first_name.errors|striptags }}</span>
+                        <!-- Profile Picture Section -->
+                        <div class="text-center my-4">
+                            <div class="profile-picture-container mx-auto mb-3">
+                                <div class="position-relative d-inline-block">
+                                    {% if form.instance.profile_picture %}
+                                        <img id="profilePreview" src="{{ form.instance.profile_picture.url }}" 
+                                             alt="Profile Picture" class="rounded-circle border shadow-sm profile-image">
+                                    {% else %}
+                                        <img id="profilePreview" src="{% static 'profile_pics/80x80.png' %}" 
+                                             alt="Default Profile Picture" class="rounded-circle border shadow-sm profile-image">
                                     {% endif %}
+                                    
+                                    <div class="position-absolute bottom-0 end-0">
+                                        <label for="id_profile_picture" class="btn btn-primary btn-sm rounded-circle upload-button">
+                                            <i class="fas fa-camera"></i>
+                                            <span class="spinner-border spinner-border-sm d-none" id="uploadSpinner"></span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    {{ form.last_name.label_tag }}
-                                    {{ form.last_name }}
-                                    {% if form.last_name.errors %}
-                                        <span class="small text-danger">{{ form.last_name.errors|striptags }}</span>
-                                    {% endif %}
+                            
+                            <div class="upload-controls">
+                                <input type="file" id="id_profile_picture" name="profile_picture" accept="image/*" class="d-none">
+                                {% if form.instance.profile_picture %}
+                                    <button type="button" class="btn btn-sm btn-danger" id="clearProfilePicture">
+                                        <i class="fas fa-trash-alt"></i> Remove Photo
+                                    </button>
+                                {% endif %}
+                                <div id="uploadStatus" class="small mt-2"></div>
+                                {% if form.profile_picture.errors %}
+                                    <div class="small text-danger mt-1">
+                                        {{ form.profile_picture.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                                <div class="small text-muted mt-1">
+                                    Recommended: 200x200px, 5MB max.
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group mb-3">
-                            {{ form.phone_number.label_tag }}
-                            {{ form.phone_number }}
-                            {% if form.phone_number.errors %}
-                                <span class="small text-danger">{{ form.phone_number.errors|striptags }}</span>
+                        <!-- Information Sections -->
+                        <div class="row g-4">
+                            <!-- Basic Information -->
+                            <div class="col-12">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-3">Basic Information</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    {{ form.first_name.label_tag }}
+                                                    {{ form.first_name }}
+                                                    {% if form.first_name.errors %}
+                                                        <div class="small text-danger">{{ form.first_name.errors|striptags }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    {{ form.last_name.label_tag }}
+                                                    {{ form.last_name }}
+                                                    {% if form.last_name.errors %}
+                                                        <div class="small text-danger">{{ form.last_name.errors|striptags }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    {{ form.phone_number.label_tag }}
+                                                    {{ form.phone_number }}
+                                                    {% if form.phone_number.errors %}
+                                                        <div class="small text-danger">{{ form.phone_number.errors|striptags }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Role Specific Information -->
+                            {% if user.is_student or user.is_faculty %}
+                            <div class="col-12">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        {% if user.is_student %}
+                                            {% include "accounts/includes/student_info_form.html" %}
+                                        {% elif user.is_faculty %}
+                                            {% include "accounts/includes/faculty_info_form.html" %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                             {% endif %}
-                        </div>
 
-                        <!-- Address Section -->
-                        <h5 class="mb-3 mt-4">Address Information</h5>
-                        <div class="form-group mb-3">
-                            {{ form.address_line1.label_tag }}
-                            {{ form.address_line1 }}
-                            {% if form.address_line1.errors %}
-                                <span class="small text-danger">{{ form.address_line1.errors|striptags }}</span>
-                            {% endif %}
-                        </div>
-
-                        <div class="form-group mb-3">
-                            {{ form.address_line2.label_tag }}
-                            {{ form.address_line2 }}
-                            {% if form.address_line2.errors %}
-                                <span class="small text-danger">{{ form.address_line2.errors|striptags }}</span>
-                            {% endif %}
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    {{ form.city.label_tag }}
-                                    {{ form.city }}
-                                    {% if form.city.errors %}
-                                        <span class="small text-danger">{{ form.city.errors|striptags }}</span>
-                                    {% endif %}
+                            <!-- Address Information -->
+                            <div class="col-12">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-3">Address Information</h5>
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    {{ form.address_line1.label_tag }}
+                                                    {{ form.address_line1 }}
+                                                    {% if form.address_line1.errors %}
+                                                        <div class="small text-danger">{{ form.address_line1.errors|striptags }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    {{ form.address_line2.label_tag }}
+                                                    {{ form.address_line2 }}
+                                                    {% if form.address_line2.errors %}
+                                                        <div class="small text-danger">{{ form.address_line2.errors|striptags }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    {{ form.city.label_tag }}
+                                                    {{ form.city }}
+                                                    {% if form.city.errors %}
+                                                        <div class="small text-danger">{{ form.city.errors|striptags }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    {{ form.state.label_tag }}
+                                                    {{ form.state }}
+                                                    {% if form.state.errors %}
+                                                        <div class="small text-danger">{{ form.state.errors|striptags }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    {{ form.country.label_tag }}
+                                                    {{ form.country }}
+                                                    {% if form.country.errors %}
+                                                        <div class="small text-danger">{{ form.country.errors|striptags }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    {{ form.zipcode.label_tag }}
+                                                    {{ form.zipcode }}
+                                                    {% if form.zipcode.errors %}
+                                                        <div class="small text-danger">{{ form.zipcode.errors|striptags }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    {{ form.state.label_tag }}
-                                    {{ form.state }}
-                                    {% if form.state.errors %}
-                                        <span class="small text-danger">{{ form.state.errors|striptags }}</span>
-                                    {% endif %}
-                                </div>
-                            </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    {{ form.country.label_tag }}
-                                    {{ form.country }}
-                                    {% if form.country.errors %}
-                                        <span class="small text-danger">{{ form.country.errors|striptags }}</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    {{ form.zipcode.label_tag }}
-                                    {{ form.zipcode }}
-                                    {% if form.zipcode.errors %}
-                                        <span class="small text-danger">{{ form.zipcode.errors|striptags }}</span>
-                                    {% endif %}
-                                </div>
-                            </div>
+                        <!-- Submit Button -->
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update Profile
+                            </button>
                         </div>
-
-                        <!-- Profile Picture Upload -->
-                        <div class="form-group mb-3">
-                            {{ form.profile_picture.label_tag }}
-                            {{ form.profile_picture }}
-                            {% if form.profile_picture.errors %}
-                                <span class="small text-danger">{{ form.profile_picture.errors|striptags }}</span>
-                            {% endif %}
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i>Update Profile
-                        </button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Password Change Card -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="float-left">Change Password</h3>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {% for field in password_form %}
-                            <div class="form-group mb-3">
-                                {{ field.label_tag }}
-                                {{ field }}
-                                {% if field.help_text %}
-                                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                                {% endif %}
-                                {% if field.errors %}
-                                    <span class="small text-danger">{{ field.errors|striptags }}</span>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-                        <button type="submit" name="password_change" class="btn btn-primary">
-                            <i class="fas fa-key me-2"></i>Change Password
-                        </button>
-                    </form>
-                </div>
-            </div>
+        <!-- Right Column - Additional Settings -->
+        <div class="col-lg-4">
+            {% include "../includes/password_change_card.html" %}
+            {% include "../includes/security_settings_card.html" %}
         </div>
     </div>
 </div>
+
+    {% block extra_css %}
+    <style>
+        /* Profile Picture Styles */
+        .profile-picture-container {
+            width: 200px;
+            height: 200px;
+        }
+
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .upload-button {
+            width: 35px;
+            height: 35px;
+            padding: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .upload-button:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+        }
+
+        /* Form Styles */
+        .form-control {
+            border-radius: 0.375rem;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        }
+
+        /* Card Styles */
+        .card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            border-bottom: none;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .profile-picture-container {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .profile-image {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        /* Form Group Spacing */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        /* Label Styling */
+        label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Error Message Styling */
+        .text-danger {
+            font-size: 0.875rem;
+        }
+    </style>
+    {% endblock %}
+
+    {% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileInput = document.getElementById('id_profile_picture');
+            const previewImage = document.getElementById('profilePreview');
+            const clearButton = document.getElementById('clearProfilePicture');
+            const uploadSpinner = document.getElementById('uploadSpinner');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const defaultImage = "{% static 'profile_pics/300x150.png' %}";
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+            function showStatus(message, isError = false) {
+                uploadStatus.textContent = message;
+                uploadStatus.className = `small mt-1 ${isError ? 'text-danger' : 'text-success'}`;
+                setTimeout(() => {
+                    uploadStatus.textContent = '';
+                }, 3000);
+            }
+        
+            function toggleLoading(loading) {
+                if (uploadSpinner) {
+                    const cameraIcon = document.querySelector('.fa-camera');
+                    if (loading) {
+                        uploadSpinner.classList.remove('d-none');
+                        cameraIcon.classList.add('d-none');
+                    } else {
+                        uploadSpinner.classList.add('d-none');
+                        cameraIcon.classList.remove('d-none');
+                    }
+                }
+            }
+        
+            async function uploadImage(file) {
+                // Validate file size
+                if (file.size > 5 * 1024 * 1024) {
+                    showStatus('File size must be less than 5MB', true);
+                    return;
+                }
+        
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    showStatus('Please upload a JPG, PNG or GIF file', true);
+                    return;
+                }
+        
+                const formData = new FormData();
+                formData.append('profile_picture', file);
+        
+                try {
+                    toggleLoading(true);
+                    
+                    const response = await fetch('{% url "update_profile_picture" %}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                        },
+                        body: formData
+                    });
+        
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        showStatus('Profile picture updated successfully');
+                        if (data.path) {
+                            previewImage.src = data.path;
+                            // Show clear button if not present
+                            if (!document.getElementById('clearProfilePicture')) {
+                                const clearBtn = document.createElement('button');
+                                clearBtn.type = 'button';
+                                clearBtn.className = 'btn btn-sm btn-danger mt-2';
+                                clearBtn.id = 'clearProfilePicture';
+                                clearBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Remove Photo';
+                                profileInput.parentElement.appendChild(clearBtn);
+                                addClearButtonListener(clearBtn);
+                            }
+                        }
+                    } else {
+                        throw new Error(data.error || 'Upload failed');
+                    }
+                } catch (error) {
+                    showStatus(error.message, true);
+                    if (previewImage.dataset.currentSrc) {
+                        previewImage.src = previewImage.dataset.currentSrc;
+                    }
+                } finally {
+                    toggleLoading(false);
+                }
+            }
+        
+            function addClearButtonListener(button) {
+                button.addEventListener('click', async function() {
+                    try {
+                        toggleLoading(true);
+                        
+                        const response = await fetch('{% url "update_profile_picture" %}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrfToken,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ clear: true })
+                        });
+        
+                        const data = await response.json();
+                        
+                        if (response.ok && data.success) {
+                            previewImage.src = data.path || defaultImage;
+                            showStatus('Profile picture removed');
+                            button.remove();
+                        } else {
+                            throw new Error(data.error || 'Failed to remove picture');
+                        }
+                    } catch (error) {
+                        showStatus(error.message, true);
+                    } finally {
+                        toggleLoading(false);
+                    }
+                });
+            }
+        
+            if (profileInput) {
+                profileInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        const file = this.files[0];
+                        previewImage.dataset.currentSrc = previewImage.src;
+                        
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImage.src = e.target.result;
+                        }
+                        reader.readAsDataURL(file);
+                        
+                        uploadImage(file);
+                    }
+                });
+            }
+        
+            if (clearButton) {
+                addClearButtonListener(clearButton);
+            }
+        });
+    </script>
+    {% endblock %}
 {% endblock %}

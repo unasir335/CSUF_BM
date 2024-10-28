@@ -2,98 +2,259 @@
 {% load static %}
 
 {% block content %}
-<div class="container py-4">
-    <h1 class="mb-4">Admin Dashboard</h1>
+<div class="container-fluid py-3 px-lg-4">
+    <h1 class="mb-4 fs-2">Admin Dashboard</h1>
+    
+    <!-- Navigation Menu -->
+    <div class="mb-4 overflow-auto">
+        <nav class="nav nav-pills flex-nowrap">
+            <a class="nav-link active" href="{% url 'admin_dashboard' %}">Dashboard</a>
+            <a class="nav-link" href="#">Users</a> 
+            <a class="nav-link" href="#">Reports</a> 
+            <a class="nav-link" href="#">Settings</a> 
+            <a class="nav-link" href="{% url 'manage_items'%}">Inventory</a>
+        </nav>
+    </div>
     
     <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Total Users</h5>
-                    <h2>{{ total_users }}</h2>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h6 class="card-title">Total Users</h6>
+                    <h3 class="mb-0">{{ total_users }}</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Admin Users</h5>
-                    <h2>{{ admin_users }}</h2>
+        <div class="col-6 col-md-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h6 class="card-title">Admin Users</h6>
+                    <h3 class="mb-0">{{ admin_users }}</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Students</h5>
-                    <h2>{{ student_users }}</h2>
+        <div class="col-6 col-md-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h6 class="card-title">Students</h6>
+                    <h3 class="mb-0">{{ student_users }}</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Faculty</h5>
-                    <h2>{{ faculty_users }}</h2>
+        <div class="col-6 col-md-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h6 class="card-title">Faculty</h6>
+                    <h3 class="mb-0">{{ faculty_users }}</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- User Management Table -->
+    <!-- User Management Table Card -->
     <div class="card">
         <div class="card-header">
-            <h3>User Management</h3>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                <h3 class="fs-4 mb-2 mb-md-0">User Management</h3>
+                {% if search_term %}
+                    <span class="badge bg-primary">
+                        {{ total_users }} result{% if total_users != 1 %}s{% endif %}
+                    </span>
+                {% endif %}
+            </div>
+            
+            <!--  Search Bar -->
+            <div class="mt-3">
+                <form method="get" class="d-flex flex-column flex-md-row gap-2">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Search users..." 
+                               value="{{ search_term }}">
+                        <button class="btn btn-primary d-flex align-items-center gap-2" type="submit">
+                            <i class="fas fa-search"></i>
+                            <span class="d-none d-sm-inline">Search</span>
+                        </button>
+                        {% if search_term %}
+                            <a href="{% url 'admin_dashboard' %}" 
+                               class="btn btn-secondary d-flex align-items-center gap-2">
+                                <i class="fas fa-times"></i>
+                                <span class="d-none d-sm-inline">Clear</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+                <small class="form-text text-muted mt-1">
+                    Use * for wildcard search
+                </small>
+            </div>
         </div>
-        <div class="card-body">
+
+        <!-- User Table -->
+        <div class="card-body p-0 p-md-3">
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th class="ps-3">Name</th>
                             <th>Email</th>
-                            <th>User Type</th>
-                            <th>Joined</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>Type</th>
+                            <th class="d-none d-md-table-cell">Joined</th>
+                            <th class="d-none d-sm-table-cell">Status</th>
+                            <th class="text-end pe-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for user in users %}
                         <tr>
-                            <td>{{ user.get_full_name }}</td>
-                            <td>{{ user.email }}</td>
+                            <td class="ps-3">{{ user.get_full_name }}</td>
+                            <td class="text-break">{{ user.email }}</td>
                             <td>
-                                {% if user.is_student %}Student
-                                {% elif user.is_faculty %}Faculty
-                                {% elif user.is_admin %}Admin
-                                {% else %}Regular User
+                                {% if user.is_student %}
+                                    <span class="badge bg-primary">Student</span>
+                                {% elif user.is_faculty %}
+                                    <span class="badge bg-info">Faculty</span>
+                                {% elif user.is_admin %}
+                                    <span class="badge bg-danger">Admin</span>
+                                    {% if user.assigned_by_superuser %}
+                                        <span class="badge bg-warning text-dark d-none d-sm-inline">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">Regular</span>
                                 {% endif %}
                             </td>
-                            <td>{{ user.date_joined|date:"M d, Y" }}</td>
-                            <td>
+                            <td class="d-none d-md-table-cell">
+                                {{ user.date_joined|date:"M d, Y" }}
+                            </td>
+                            <td class="d-none d-sm-table-cell">
                                 <span class="badge {% if user.is_active %}bg-success{% else %}bg-danger{% endif %}">
-                                    {{ user.is_active|yesno:"Active,Inactive" }}
+                                    {% if user.is_active %}Active{% else %}Inactive{% endif %}
                                 </span>
                             </td>
-                            <td>
+                            <!-- Inside your table's action column -->
+                            <td class="text-end pe-3">
                                 <form method="post" class="d-inline">
                                     {% csrf_token %}
                                     <input type="hidden" name="user_id" value="{{ user.id }}">
                                     
-                                    <!-- Toggle Admin Status -->
-                                    <button type="submit" name="action" value="toggle_admin" 
-                                            class="btn btn-sm {% if user.is_admin %}btn-danger{% else %}btn-success{% endif %}">
-                                        {% if user.is_admin %}Remove Admin{% else %}Make Admin{% endif %}
-                                    </button>
-                                    
-                                    <!-- Toggle Active Status -->
-                                    <button type="submit" name="action" value="toggle_active" 
-                                            class="btn btn-sm {% if user.is_active %}btn-warning{% else %}btn-info{% endif %}">
-                                        {% if user.is_active %}Deactivate{% else %}Activate{% endif %}
-                                    </button>
+                                    {% if request.user.is_superuser or user.id not in unmodifiable_users %}
+                                        <div class="btn-group">
+                                            <!-- Role Management Dropdown -->
+                                            <div class="btn-group">
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-primary dropdown-toggle"
+                                                        data-bs-toggle="dropdown"
+                                                        {% if user.is_superuser %}disabled{% endif %}>
+                                                    <i class="fas fa-user-cog"></i>
+                                                    <span class="d-none d-md-inline ms-1">Change Role</span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <!-- Admin Role Option -->
+                                                    {% if not user.is_admin %}
+                                                    <li>
+                                                        <button type="submit" 
+                                                                name="action" 
+                                                                value="make_admin" 
+                                                                class="dropdown-item">
+                                                            <i class="fas fa-user-shield"></i> Make Admin
+                                                        </button>
+                                                    </li>
+                                                    {% endif %}
+
+                                                    <!-- Faculty Role Option -->
+                                                    {% if not user.is_faculty %}
+                                                    <li>
+                                                        <button type="submit" 
+                                                                name="action" 
+                                                                value="make_faculty" 
+                                                                class="dropdown-item">
+                                                            <i class="fas fa-chalkboard-teacher"></i> Make Faculty
+                                                        </button>
+                                                    </li>
+                                                    {% endif %}
+
+                                                    <!-- Student Role Option -->
+                                                    {% if not user.is_student %}
+                                                    <li>
+                                                        <button type="submit" 
+                                                                name="action" 
+                                                                value="make_student" 
+                                                                class="dropdown-item">
+                                                            <i class="fas fa-user-graduate"></i> Make Student
+                                                        </button>
+                                                    </li>
+                                                    {% endif %}
+
+                                                    <!-- Regular User Option -->
+                                                    {% if user.is_admin or user.is_faculty or user.is_student %}
+                                                    <li>
+                                                        <button type="submit" 
+                                                                name="action" 
+                                                                value="make_regular" 
+                                                                class="dropdown-item">
+                                                            <i class="fas fa-user"></i> Make Regular User
+                                                        </button>
+                                                    </li>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+
+                                            <!-- Account Status Button -->
+                                            <button type="submit" 
+                                                    name="action" 
+                                                    value="toggle_active" 
+                                                    class="btn btn-sm {% if user.is_active %}btn-warning{% else %}btn-success{% endif %}"
+                                                    title="{% if user.is_active %}Deactivate{% else %}Activate{% endif %} account"
+                                                    {% if user.is_superuser or user.assigned_by_superuser and not request.user.is_superuser %}disabled{% endif %}>
+                                                <i class="fas {% if user.is_active %}fa-ban{% else %}fa-check{% endif %}"></i>
+                                            </button>
+
+                                            <!-- Delete Button -->
+                                            {% if request.user.is_superuser or not user.is_admin %}
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-danger"
+                                                    onclick="showDeleteModal(
+                                                        '{{ user.id }}', 
+                                                        '{{ user.get_full_name|escapejs }}', 
+                                                        '{{ user.email|escapejs }}'
+                                                    )"
+                                                    {% if user.is_superuser or user.assigned_by_superuser or user.is_admin and not request.user.is_superuser %}disabled{% endif %}
+                                                    title="Delete user">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        {% if not user.assigned_by_superuser %}
+                                        <!-- Status Toggle for Regular Admins -->
+                                        <button type="submit" 
+                                                name="action" 
+                                                value="toggle_active" 
+                                                class="btn btn-sm {% if user.is_active %}btn-warning{% else %}btn-success{% endif %}"
+                                                title="{% if user.is_active %}Deactivate{% else %}Activate{% endif %} account">
+                                            <i class="fas {% if user.is_active %}fa-ban{% else %}fa-check{% endif %}"></i>
+                                        </button>
+                                        {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-lock"></i> Protected User
+                                        </span>
+                                        {% endif %}
+                                    {% endif %}
                                 </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas {% if search_term %}fa-search{% else %}fa-users{% endif %} fa-2x mb-3"></i>
+                                    <p>{% if search_term %}No results for "{{ search_term }}"{% else %}No users available{% endif %}</p>
+                                    {% if search_term %}
+                                        <a href="{% url 'admin_dashboard' %}" class="btn btn-sm btn-primary">Clear Search</a>
+                                    {% endif %}
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -103,4 +264,92 @@
         </div>
     </div>
 </div>
+
+    {% block extra_css %}
+    <style>
+        /* Responsive layout fixes */
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            
+            .table {
+                font-size: 0.875rem;
+            }
+            
+            .btn-group .btn {
+                padding: 0.25rem 0.5rem;
+            }
+        }
+
+        /* Fix dropdown menus */
+        .table-responsive {
+            overflow: visible !important;
+        }
+        
+        .card-body {
+            overflow: visible !important;
+        }
+        
+        .dropdown-menu {
+            position: absolute !important;
+            z-index: 1050 !important;
+            right: 0;  /* Align dropdowns to the right */
+            left: auto !important;
+        }
+        
+        /* Table container with scrolling */
+        .table-container {
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+        }
+        
+        /* Button group positioning */
+        .btn-group {
+            position: relative;
+        }
+        
+        /* Improve touch targets on mobile */
+        @media (max-width: 768px) {
+            .btn, .dropdown-item {
+                min-height: 38px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .dropdown-menu {
+                min-width: 200px;  /* Wider dropdown on mobile */
+            }
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+    {% endblock %}
+
+
+    {% block extra_js%}
+    <script>
+        function showDeleteModal(userId, userName, userEmail, isProtected) {
+            if (isProtected) {
+                // If user is protected, just show an alert
+                alert('Protected users cannot be deleted.');
+                return;
+            }
+            
+            // Set modal content
+            document.getElementById('deleteUserName').textContent = userName;
+            document.getElementById('deleteUserEmail').textContent = userEmail;
+            document.getElementById('deleteUserId').value = userId;
+            
+            // Show the modal
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+            deleteModal.show();
+        }
+    </script>
+    {% endblock %}
+
 {% endblock %}

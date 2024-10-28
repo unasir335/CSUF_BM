@@ -8,9 +8,8 @@ def home(request):
 def login(request):
     return render(request,"login.html")
 
-def categories(request):
-    catItems = CategoryItem.objects.all()
-    return render(request, "categories.html", {"categories": catItems})
-
 def aboutUs(request):
     return render(request, "aboutUs.html")
+
+def contact_us(request):
+    return render(request, "contact_us.html")

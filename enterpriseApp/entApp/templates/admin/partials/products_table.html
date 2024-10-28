@@ -1,0 +1,50 @@
+{% for product in products %}
+<tr>
+    <td>{{ product.name }}</td>
+    <td>
+        <span class="badge {% if product.digital_type %}bg-info{% else %}bg-secondary{% endif %}">
+            {% if product.digital_type %}Digital{% else %}Physical{% endif %}
+        </span>
+    </td>
+    <td>{{ product.category.name }}</td>
+    <td>
+        {% if product.discount > 0 %}
+        <span class="text-decoration-line-through text-muted">${{ product.price }}</span>
+        <span class="badge bg-danger">{{ product.discount }}% OFF</span>
+        <br>${{ product.discounted_price }}
+        {% else %}
+        ${{ product.price }}
+        {% endif %}
+    </td>
+    <td>
+        {% if product.digital_type %}
+            {{ product.version }}
+        {% else %}
+            {{ product.stock }}
+        {% endif %}
+    </td>
+    <td>
+        {% if product.is_available %}
+        <span class="badge bg-success">Available</span>
+        {% else %}
+        <span class="badge bg-danger">Not Available</span>
+        {% endif %}
+    </td>
+    <td>
+        <a href="{% url 'edit_product' product.id %}" class="btn btn-sm btn-warning">Edit</a>
+        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProductModal{{ product.id }}">
+            Delete
+        </button>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="7" class="text-center">
+        {% if search_term %}
+            No products found matching "{{ search_term }}"
+        {% else %}
+            No products found
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}

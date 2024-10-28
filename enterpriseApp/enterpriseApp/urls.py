@@ -22,7 +22,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #path('', entApp_views.home, name='home'),
     path('', include("entApp.urls")),
     path('accounts/', include("accounts.urls")),
     path('checkout/', include("checkout.urls")),
@@ -31,3 +30,6 @@ urlpatterns = [
     
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

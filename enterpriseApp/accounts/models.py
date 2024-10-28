@@ -1,11 +1,17 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 from abc import ABC, abstractmethod
 from django.conf import settings
 from django.dispatch import receiver
+from django.core.files.storage import default_storage
+
 import os
 from django.db.models.signals import pre_save
+import logging
+
+logger = logging.getLogger(__name__)
 
 class UserManager(ABC):
     @abstractmethod
@@ -15,55 +21,153 @@ class UserManager(ABC):
     @abstractmethod
     def create_superuser(self, first_name, last_name, email, username, password):
         pass
-    
+
+# Updated 10/25 Validate that a user can only have one role
 class MyAccountManager(BaseUserManager):
+    def validate_user_type(self, **kwargs):
+        role_count = sum([
+            kwargs.get('is_student', False),
+            kwargs.get('is_faculty', False),
+            kwargs.get('is_admin', False)
+        ])
+        
+        if role_count > 1:
+            raise ValidationError("User cannot have multiple roles (student, faculty, or admin)")
+        
+        return True
+
+    @transaction.atomic
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
         if not username:
             raise ValueError('Users must have a username')
         
+        # Validate user type
+        self.validate_user_type(**extra_fields)
+        
         email = self.normalize_email(email)
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
-        user.save(using=self._db)
-        return user
-
+        
+        # If the user is being made an admin, check if it's being done by a superuser
+        if extra_fields.get('is_admin', False):
+            from threading import local
+            _thread_locals = local()
+            current_user = getattr(_thread_locals, 'current_user', None)
+            
+            if current_user and current_user.is_superuser:
+                user.assigned_by_superuser = True
+                user.is_staff = True  # Automatically set staff status for superuser-assigned admins
+        
+        try:
+            user.full_clean()  # Run model validation
+            user.save(using=self._db)
+            
+            logger.info(
+                f"Created new user: {email} | Roles: {self.get_user_roles(user)}"
+            )
+            
+            return user
+            
+        except ValidationError as e:
+            logger.error(f"User creation failed for {email}: {str(e)}")
+            raise
+    
+    @transaction.atomic
     def create_superuser(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('is_admin', True)  # Add this line
+        extra_fields.setdefault('is_admin', True)
+        extra_fields.setdefault('assigned_by_superuser', True)
+        
+        if not extra_fields.get('is_staff'):
+            raise ValueError('Superuser must have is_staff=True.')
+        if not extra_fields.get('is_superuser'):
+            raise ValueError('Superuser must have is_superuser=True.')
+            
         return self.create_user(username, email, password, **extra_fields)
+    
+    def get_user_roles(self, user):
+        """Get list of user's active roles"""
+        roles = []
+        if user.is_superuser:
+            roles.append('Superuser')
+        if user.is_admin:
+            roles.append('Admin')
+        if user.is_student:
+            roles.append('Student')
+        if user.is_faculty:
+            roles.append('Faculty')
+        return roles if roles else ['Regular User']
 
-
-# LSP: MyAccountManager can be used wherever UserManager is expected
 class Account(AbstractBaseUser, PermissionsMixin):
-    first_name      = models.CharField(max_length=50)
-    last_name       = models.CharField(max_length=50)
-    username        = models.CharField(max_length=50, unique=True)
-    email           = models.EmailField(max_length=100, unique=True)
-    phone_regex     = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-    phone_number    = models.CharField(validators=[phone_regex], max_length=17, blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', default='users/profile_pics/80x80.png', null=True, blank=True)
-    security_question = models.CharField(max_length=255)
-    security_answer = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    username = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(max_length=100, unique=True)
+    phone_regex = RegexValidator(
+        regex=r'^\+?1?\d{9,15}$', 
+        message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed."
+    )
+    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
+    profile_picture = models.ImageField(
+        upload_to='profile_pics/', 
+        default='users/profile_pics/80x80.png', 
+        null=True, 
+        blank=True
+    )
+    
+    security_question = models.CharField(max_length=255, blank=True, default='')
+    security_answer = models.CharField(max_length=255, blank=True, default='')
     
     # User type fields
-    is_admin        = models.BooleanField(default=False)
-    is_active       = models.BooleanField(default=True)
-    is_staff        = models.BooleanField(default=False)
-    is_student      = models.BooleanField(default=False)
-    is_faculty      = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_student = models.BooleanField(default=False)
+    is_faculty = models.BooleanField(default=False)
+    registration_complete = models.BooleanField(default=False)
+    assigned_by_superuser = models.BooleanField(default=False)  # Added this field
     
     # Timestamps
-    date_joined     = models.DateTimeField(auto_now_add=True)
-    last_login      = models.DateTimeField(auto_now=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(auto_now=True)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
    
     objects = MyAccountManager()
+    
+    def clean(self):
+        super().clean()
+        
+        # Validate user type
+        role_count = sum([
+            self.is_student,
+            self.is_faculty,
+            self.is_admin
+        ])
+        
+        if role_count > 1:
+            raise ValidationError({
+                'user_type': "User cannot have multiple roles (student, faculty, or admin)"
+            })
+        
+        # Validate superuser-related fields
+        if self.is_superuser:
+            self.is_staff = True
+            self.is_admin = True
+            self.assigned_by_superuser = True
+        
+        # Validate staff status for admin users
+        if self.is_admin and self.assigned_by_superuser:
+            self.is_staff = True
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return self.email
@@ -74,51 +178,66 @@ class Account(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.first_name
     
-    # modified 10/22
-    # def has_perm(self, perm, obj=None):
-    #     return self.is_superuser
-    def has_perm(self, perm, obj=None):
-    #Check if user has a specific permission.
+    @property
+    def role(self):
         if self.is_superuser:
-            return True
-        if self.is_admin:
-            return True
-        return False
+            return 'Superuser'
+        elif self.is_admin:
+            return 'Admin'
+        elif self.is_student:
+            return 'Student'
+        elif self.is_faculty:
+            return 'Faculty'
+        return 'Regular User'
     
-    # modified 10/22
-    # def has_module_perms(self, add_label):
-    #     return True
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser or self.is_admin
+    
     def has_module_perms(self, app_label):
-    #Check if user has permissions to view the app `app_label`
-        if self.is_superuser:
-            return True
-        if self.is_admin:
-            return True
-        return False
-    # 10/22 added
+        return self.is_superuser or self.is_admin
+    
     @property
     def is_superuser_or_admin(self):
-    #Check if user is either superuser or admin.
         return self.is_superuser or self.is_admin
 
-
 class Student(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='student',
+        primary_key=True
+    )
     student_id = models.CharField(max_length=20, unique=True)
     major = models.CharField(max_length=100)
     year = models.IntegerField()
 
+    class Meta:
+        db_table = 'accounts_student'
+        verbose_name = 'Student Profile'
+        verbose_name_plural = 'Student Profiles'
+    
     def __str__(self):
-        return f"Student: {self.user.get_full_name()}"
-
+        return f"{self.user.get_full_name()} - {self.student_id}"
+    
 class Faculty(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='faculty',
+        primary_key=True
+    )
     faculty_id = models.CharField(max_length=20, unique=True)
     department = models.CharField(max_length=100)
     position = models.CharField(max_length=100)
+    research_areas = models.TextField(blank=True)
 
+    class Meta:
+        db_table = 'accounts_faculty'
+        verbose_name = 'Faculty Profile'
+        verbose_name_plural = 'Faculty Profiles'
+    
     def __str__(self):
-        return f"Faculty: {self.user.get_full_name()}"
+        return f"{self.user.get_full_name()} - {self.faculty_id}"
 
 class Address(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='address')
@@ -146,7 +265,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=50, blank=True)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
     phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='users/profile_pictures', default='users/profile_pics/300x150.png', blank=True)
+    profile_picture = models.ImageField(upload_to='users/profile_pictures', default='/profile_pics/300x150.png', blank=True)
     address_line1 = models.CharField(max_length=100, blank=True)
     address_line2 = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=50, blank=True)
@@ -165,19 +284,22 @@ class UserProfile(models.Model):
     
     def delete_old_image(self):
         try:
-            # Get the current profile picture
-            old_image = UserProfile.objects.get(pk=self.pk).profile_picture
-            # Check if there is an existing file and if it's different from the current one
-            if old_image and old_image != self.profile_picture:
-                if os.path.isfile(old_image.path):
-                    os.remove(old_image.path)
+            if self.pk:  # Only if the instance exists in DB
+                old_profile = UserProfile.objects.get(pk=self.pk)
+                if (old_profile.profile_picture and 
+                    old_profile.profile_picture != self.profile_picture and 
+                    old_profile.profile_picture.name != 'profile_pics/300x150.png'):
+                    # Delete the old file from storage
+                    default_storage.delete(old_profile.profile_picture.name)
         except UserProfile.DoesNotExist:
-            pass  # If it's a new profile, there's no old picture to delete
-        
-@receiver(pre_save, sender=UserProfile)
-def delete_old_image_on_update(sender, instance, **kwargs):
-    if instance.pk:
-        instance.delete_old_image()
+            pass
+        except Exception as e:
+            print(f"Error deleting old image: {e}")
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            self.delete_old_image()
+        super().save(*args, **kwargs)
 
 class OrderHistory(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='order_history')

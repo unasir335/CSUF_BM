@@ -60,6 +60,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #added 10/18 for cart to attach it to objects
     'cart.views.cart_middleware',
+    # 10/25 added
+    #'accounts.middleware.RegistrationCompletionMiddleware',
 ]
 
 ROOT_URLCONF = 'enterpriseApp.urls'
@@ -149,6 +151,34 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# File Upload Settings
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5MB
+FILE_UPLOAD_PERMISSIONS = 0o644
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -162,14 +192,6 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-# Email Configuration 10/5
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.mailgun.org'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'postmaster@sandbox1db6c290a2fe4440b8b8b117cde6b41b.mailgun.org'
-EMAIL_HOST_PASSWORD = '473bc8d2c035b03406a637616d951afa-5dcb5e36-fcf505f5'
-DEFAULT_FROM_EMAIL = 'cc1052024@outlook.com'  # Replace with your sender email
 
 # Security enhancements
 CSRF_COOKIE_SECURE = True  # Use only with HTTPS
