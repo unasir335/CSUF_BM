@@ -1,0 +1,192 @@
+{% extends "base.html" %}  <!-- This must be the first line -->
+
+{% load static %}  <!-- Load the static template tag library -->
+
+
+
+{% block content %}  <!-- Start the content block -->
+<!-- Bootstrap Template Content Starts Here -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <title>{% block title %}Freshshop - Ecommerce Bootstrap 4 HTML Template{% endblock %}</title>
+</head>
+
+<body>
+    <!-- Start All Title Box -->
+    <div class="all-title-box">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>ABOUT US</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="breadcrumb-item active">ABOUT US</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End All Title Box -->
+
+    <!-- Start About Page  -->
+    <div class="about-box-main">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="banner-frame">
+                        <img class="img-fluid" src="{% static 'images/about-img.jpg' %}" alt=""/>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="noo-sh-title-top">We are <span>Freshshop</span></h2>
+                    <p>"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo...</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <a class="btn hvr-hover" href="#">Read More</a>
+                </div>
+            </div>
+
+            <div class="row my-5">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="service-block-inner">
+                        <h3>We are Trusted</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="service-block-inner">
+                        <h3>We are Professional</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="service-block-inner">
+                        <h3>We are Expert</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+                    </div>
+                </div>
+            </div>
+
+              
+                <!-- Team member cards go here -->
+                 <!-- Team Section -->
+<div class="team-section">
+    <div class="container">
+        <h2 class="noo-sh-title">Meet Our Team</h2>
+        <div class="row justify-content-center">
+            <div class="col-sm-6 col-md-4">
+                <div class="team-tile">
+                    <img src="{% static 'images/img-2.jpg' %}" alt="Team Member 1" class="img-fluid">
+                    <div class="team-info">
+                        <h3>Tatiana Klimova</h3>
+                        <p><strong>Role:</strong> Web Architect/ Back-end Engineer</p>
+                        <p><strong>Years with Company:</strong> 6</p>
+                        <p><strong>GitHub:</strong> <a href="#" target="_blank">GitHub Link</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:williamson@example.com">williamson@example.com</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="team-tile">
+                    <img src="{% static 'images/img-1.jpg' %}" alt="Team Member 2" class="img-fluid">
+                    <div class="team-info">
+                        <h3>Andrew Truong</h3>
+                        <p><strong>Role:</strong> Full-stack Developer</p>
+                        <p><strong>Years with Company:</strong> 4</p>
+                        <p><strong>GitHub:</strong> <a href="#" target="_blank">GitHub Link</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:kristiana@example.com">kristiana@example.com</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="team-tile">
+                    <img src="{% static 'images/profPic_Umar.jpg' %}" alt="Team Member 3" class="img-fluid">
+                    <div class="team-info">
+                        <h3>Umar Nasir</h3>
+                        <p><strong>Role:</strong> Front-end Developer</p>
+                        <p><strong>Years with Company:</strong> 4</p>
+                        <p><strong>GitHub:</strong> <a href="#" target="_blank">GitHub Link</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:steve@example.com">steve@example.com</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="team-tile">
+                    <img src="{% static 'images/img-3.jpg' %}" alt="Team Member 4" class="img-fluid">
+                    <div class="team-info">
+                        <h3>Chris Ascencio</h3>
+                        <p><strong>Role:</strong> Designer & Front-end Developer</p>
+                        <p><strong>Years with Company:</strong> 3</p>
+                        <p><strong>GitHub:</strong> <a href="#" target="_blank">GitHub Link</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:sarah@example.com">sarah@example.com</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="team-tile">
+                    <img src="{% static 'images/img-3.jpg' %}" alt="Team Member 5" class="img-fluid">
+                    <div class="team-info">
+                        <h3>Jesse Mendoza</h3>
+                        <p><strong>Role:</strong> Databse Administrator & UI/UX Designer</p>
+                        <p><strong>Years with Company:</strong> 4</p>
+                        <p><strong>GitHub:</strong> <a href="#" target="_blank">GitHub Link</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:michael@example.com">michael@example.com</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="team-tile">
+                    <img src="{% static 'images/img-1.jpg' %}" alt="Team Member 6" class="img-fluid">
+                    <div class="team-info">
+                        <h3>Nicholas Shedd </h3>
+                        <p><strong>Role:</strong> Front-end Devloper & QA Testing Lead</p>
+                        <p><strong>Years with Company:</strong> 2</p>
+                        <p><strong>GitHub:</strong> <a href="#" target="_blank">GitHub Link</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:jessica@example.com">jessica@example.com</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <div class="team-tile">
+                    <img src="{% static 'images/img-1.jpg' %}" alt="Team Member 6" class="img-fluid">
+                    <div class="team-info">
+                        <h3>Troy</h3>
+                        <p><strong>Role:</strong> ??????? </p>
+                        <p><strong>Years with Company:</strong> Intern</p>
+                        <p><strong>GitHub:</strong> <a href="#" target="_blank">GitHub Link</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:jessica@example.com">jessica@example.com</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Team Section -->
+
+            </div>
+        </div>
+    </div>
+    <!-- End About Page -->
+
+    <a href="#" id="back-to-top" title="Back to top" style="display: none;">&uarr;</a>
+
+    <!-- ALL JS FILES -->
+    <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+</body>
+
+</html>
+
+{% endblock %}  <!-- Closing the content block -->

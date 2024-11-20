@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ single_product.name }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ single_product.name }}</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <img src="{{ single_product.image.url }}" alt="{{ single_product.name }}" class="img-fluid">
+        </div>
+        <div class="col-md-6">
+            <p><strong>Price:</strong> ${{ single_product.price }}</p>
+            <p><strong>Description:</strong> {{ single_product.description }}</p>
+            <p><strong>Category:</strong> {{ single_product.category.name }}</p>
+            <p><strong>Stock:</strong> {{ single_product.stock }}</p>
+            {% if single_product.average_rating %}
+                <p><strong>Average Rating:</strong> {{ single_product.average_rating }}</p>
+            {% endif %}
+            
+            <form action="{% url 'add_to_cart' single_product.id %}" method="post" class="mt-3">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ single_product.stock }}" class="form-control" style="width: 100px;">
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+
+
+{% endblock %}
