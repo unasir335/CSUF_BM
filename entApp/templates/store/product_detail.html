@@ -1,0 +1,561 @@
+{% extends "base.html" %} 
+{% block title %}{{ single_product.name }}{% endblock %} 
+{% block content %}
+<div class="container product-detail-container mt-4">
+<div class="row g-4">
+<!-- Mobile Title -->
+<div class="col-12 d-md-none">
+   <h1 class="product-title h3">{{ single_product.name }}</h1>
+</div>
+<!-- Product Image Column -->
+<div class="col-12 col-md-6">
+   <div class="product-image-container mb-4">
+      <img src="{{ single_product.image.url }}" 
+         alt="{{ single_product.name }}"
+         class="img-fluid rounded shadow"
+         style="width: 100%; object-fit: cover;">
+   </div>
+   <!-- Faculty Recommendation Form -->
+   {% if is_faculty %}
+   <div class="card mb-4">
+      <div class="card-header">
+         <h4 class="mb-0">Faculty Recommendation</h4>
+         {% if user_recommendation %}
+         <span class="badge bg-light text-primary">Your recommendation exists</span>
+         {% endif %}
+      </div>
+      <div class="card-body">
+         <form id="recommendationForm">
+            {% csrf_token %}
+            <div class="form-group mb-4">
+               <label for="recommendationText" class="form-label">Your Recommendation:</label>
+               <textarea 
+                  id="recommendationText"
+                  class="form-control" 
+                  rows="3" 
+                  placeholder="Share why you recommend this product..."
+                  >{% if user_recommendation %}{{ user_recommendation.recommendation_text }}{% endif %}</textarea>
+            </div>
+            <div class="form-check mb-4">
+               <input type="checkbox" 
+               class="form-check-input" 
+               id="isEssential"
+               {% if user_recommendation and user_recommendation.is_essential %}checked{% endif %}>
+               <label class="form-check-label" for="isEssential">
+               <span class="d-flex align-items-center">
+               Essential for Class
+               <i class="fas fa-info-circle ms-2" 
+                  data-bs-toggle="tooltip" 
+                  title="Mark this if the product is required for your course"></i>
+               </span>
+               </label>
+            </div>
+            <div id="recommendationAlert" class="alert d-none mb-4"></div>
+            <div class="d-flex flex-column flex-sm-row gap-3">
+               <button type="submit" class="btn btn-primary" id="submitRecommendation">
+               <i class="fas {% if user_recommendation %}fa-edit{% else %}fa-plus{% endif %} me-2"></i>
+               {% if user_recommendation %}Update{% else %}Add{% endif %} Recommendation
+               </button>
+               {% if user_recommendation %}
+               <button type="button" class="btn btn-outline-danger" id="deleteRecommendation">
+               <i class="fas fa-trash-alt me-2"></i>Remove Recommendation
+               </button>
+               {% endif %}
+            </div>
+         </form>
+      </div>
+   </div>
+   {% endif %}
+   <!-- Recommendations Section -->
+   <div class="recommendations-section card mb-4">
+      <div class="card-header">
+         <h4 class="mb-0">Faculty Recommendations</h4>
+      </div>
+      <div class="card-body">
+         {% if recommendations %}
+         {% for rec in recommendations %}
+         <div class="recommendation-card mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+            <div class="d-flex justify-content-between align-items-start">
+               <div>
+                  <h6 class="mb-1">{{ rec.faculty.user.get_full_name }}</h6>
+                  <small>{{ rec.faculty.department }}</small>
+               </div>
+               {% if rec.is_essential %}
+               <span class="badge bg-warning">Essential for Class</span>
+               {% endif %}
+            </div>
+            <p>{{ rec.recommendation_text }}</p>
+            <small>{{ rec.created_at|date:"F d, Y" }}</small>
+         </div>
+         {% endfor %}
+         {% else %}
+         <p>No faculty recommendations yet.</p>
+         {% endif %}
+      </div>
+   </div>
+</div>
+<!-- Product Details Column -->
+<div class="col-12 col-md-6">
+   <!-- Desktop Title -->
+   <h1 class="product-title h3 d-none d-md-block">{{ single_product.name }}</h1>
+   <!-- Price and Rating Section -->
+   <div class="price-section card mb-4">
+      <div class="card-body">
+         <div class="d-flex justify-content-between align-items-center mb-2">
+            <!-- Price -->
+            <div class="card border-0 bg-dark bg-opacity-10 p-3 mb-3">
+                {% if user.is_student %}
+                   {% if single_product.discount > 0 %}
+                      <div class="d-flex flex-wrap align-items-center gap-2">
+                         <!-- Original Price -->
+                         <span class="text-decoration-line-through text-muted fs-5 mb-0">
+                            ${{ single_product.price }}
+                         </span>
+                         
+                         <!-- Discount Badge -->
+                         <span class="badge bg-danger">
+                            {{ single_product.discount }}% OFF
+                         </span>
+                         
+                         <!-- Final Price -->
+                         <div class="d-flex align-items-center">
+                            <h3 class="text-success mb-0 fw-bold">
+                               ${{ single_product.discounted_price }}
+                            </h3>
+                            <small class="text-success ms-2">(Student Discount)</small>
+                         </div>
+                      </div>
+                   {% else %}
+                      <div class="py-2">
+                         <h3 class="mb-0 fw-bold">${{ single_product.price }}</h3>
+                      </div>
+                   {% endif %}
+                {% else %}
+                   <div class="py-2">
+                      <h3 class="mb-0 fw-bold">${{ single_product.price }}</h3>
+                   </div>
+                {% endif %}
+             </div>
+            <!-- Rating -->
+            <div class="text-end">
+               <div class="d-flex align-items-center">
+                  <div class="h4 mb-0 me-2">{{ single_product.average_rating|floatformat:1 }}</div>
+                  <div class="stars d-flex align-items-center">
+                     {% for i in "12345"|make_list %}
+                     {% if forloop.counter <= single_product.average_rating %}
+                     <i class="fas fa-star text-warning"></i>
+                     {% else %}
+                     <i class="far fa-star text-warning"></i>
+                     {% endif %}
+                     {% endfor %}
+                  </div>
+               </div>
+               <small class="text-muted">{{ reviews|length }} review{{ reviews|length|pluralize }}</small>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- Product Details -->
+   <div class="details-section card mb-4">
+      <div class="card-body">
+         <p><strong>Description:</strong> {{ single_product.description }}</p>
+         <p><strong>Category:</strong> {{ single_product.category.name }}</p>
+         {% if single_product.brand %}
+         <p><strong>Brand:</strong> {{ single_product.brand }}</p>
+         {% endif %}
+      </div>
+   </div>
+   <!-- Add to Cart Section -->
+   <div class="cart-section card mb-4">
+      <div class="card-body">
+        <form method="POST" action="{% url 'add_to_cart' single_product.id %}" class="add-to-cart-form">
+            {% csrf_token %}
+            {% if single_product.stock > 0 or single_product.is_digital %}
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <div class="quantity-wrapper">
+                        <label for="quantity" class="form-label">Quantity:</label>
+                        <input type="number" 
+                               class="form-control form-control-lg" 
+                               id="quantity"
+                               name="quantity"
+                               min="1" 
+                               max="{{ single_product.stock }}" 
+                               value="1">
+                        <small class="text-muted d-block mt-1">{{ single_product.stock }} available</small>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <label class="form-label d-block invisible">Add to Cart</label>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center">
+                <span class="badge bg-danger p-2 fs-6">Out of Stock</span>
+            </div>
+            {% endif %}
+        </form>
+         
+      </div>
+   </div>
+   <!-- Reviews Section -->
+   <div class="reviews-section card">
+      <div class="card-body">
+         <h3 class="mb-4">Reviews</h3>
+         {% if user.is_authenticated %}
+         <div class="review-form mb-4">
+            <form id="reviewForm" method="POST" action="{% url 'product_detail' category_slug=single_product.category.slug product_slug=single_product.slug %}">
+               {% csrf_token %}
+               <div class="mb-4">
+                  <label class="form-label d-block mb-2">Rating:</label>
+                  <div class="rating-input-wrapper">
+                     <div class="star-rating d-flex flex-row-reverse justify-content-end">
+                        {% for i in "54321"|make_list %}
+                        <input type="radio" 
+                        id="star{{ i }}" 
+                        name="rating" 
+                        value="{{ i }}" 
+                        class="btn-check"
+                        {% if user_review and user_review.rating == i|add:"0" %}checked{% endif %}
+                        required>
+                        <label for="star{{ i }}" 
+                           class="star-label me-2"
+                           title="{{ i }} stars">
+                        <i class="fas fa-star"></i>
+                        </label>
+                        {% endfor %}
+                     </div>
+                     <div class="d-block xs text-muted" id="rating-error" style="display: none;">
+                        Please select a star rating
+                     </div>
+                     {% if review_form.rating.errors %}
+                     <div class="invalid-feedback d-block">
+                        {{ review_form.rating.errors }}
+                     </div>
+                     {% endif %}
+                  </div>
+               </div>
+               <div class="form-group mb-3">
+                  <label class="form-label">Your Review:</label>
+                  <textarea name="review" 
+                     rows="4" 
+                     class="form-control {% if review_form.review.errors %}is-invalid{% endif %}" 
+                     placeholder="Share your thoughts about this product..."
+                     required>{% if user_review %}{{ user_review.review }}{% endif %}</textarea>
+                  {% if review_form.review.errors %}
+                  <div class="invalid-feedback">
+                     {{ review_form.review.errors }}
+                  </div>
+                  {% endif %}
+               </div>
+               <button type="submit" class="btn btn-primary">
+               {% if user_review %}Update{% else %}Submit{% endif %} Review
+               </button>
+            </form>
+         </div>
+         {% else %}
+         <div class="alert alert-warning">
+            <a href="{% url 'login' %}?next={{ request.path }}" class="alert-link text-warning">Log in</a> to leave a review.
+         </div>
+         {% endif %}
+         {% if reviews %}
+         {% for review in reviews %}
+         <div class="review-card mb-4 {% if not forloop.last %}border-bottom pb-4{% endif %}">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+               <h6 class="mb-0">{{ review.user.get_full_name|default:review.user.username }}</h6>
+               <div class="review-rating">
+                  <div class="stars d-flex align-items-center">
+                     {% for i in "12345"|make_list %}
+                     <i class="fas fa-star {% if forloop.counter <= review.rating %}text-warning{% else %}text-muted{% endif %} me-1"></i>
+                     {% endfor %}
+                  </div>
+               </div>
+            </div>
+            <p class="mb-2">{{ review.review }}</p>
+            <small class="text-muted">{{ review.created_at|date:"F d, Y" }}</small>
+         </div>
+         {% endfor %}
+         {% else %}
+         <p>No reviews yet.</p>
+         {% endif %}
+      </div>
+   </div>
+</div>
+<!-- JavaScript for Faculty Recommendations -->
+{% if is_faculty %}
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+       const form = document.getElementById('recommendationForm');
+       const alert = document.getElementById('recommendationAlert');
+       const submitBtn = document.getElementById('submitRecommendation');
+       const deleteBtn = document.getElementById('deleteRecommendation');
+       const csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+       const recommendationsContainer = document.querySelector('.recommendations-section .card-body');
+   
+       if (!form || !alert || !submitBtn) {
+           console.error('Required elements not found');
+           return;
+       }
+   
+       function showAlert(message, isError = false) {
+           alert.textContent = message;
+           alert.classList.remove('d-none', 'alert-success', 'alert-danger');
+           alert.classList.add(isError ? 'alert-danger' : 'alert-success');
+           setTimeout(() => alert.classList.add('d-none'), 3000);
+       }
+   
+       // Function to update the recommendations display
+       function updateRecommendationDisplay(recommendation, isUpdate = false) {
+           const facultyName = "{{ request.user.get_full_name }}";
+           const department = "{{ request.user.faculty.department }}";
+           const currentDate = new Date().toLocaleDateString('en-US', { 
+               year: 'numeric', 
+               month: 'long', 
+               day: 'numeric' 
+           });
+   
+           // Create or update recommendation HTML
+           const recommendationHtml = `
+               <div class="recommendation-card mb-3 border-bottom pb-3">
+                   <div class="d-flex justify-content-between align-items-start">
+                       <div>
+                           <h6 class="mb-1">${facultyName}</h6>
+                           <small>${department}</small>
+                       </div>
+                       ${recommendation.is_essential ? '<span class="badge bg-warning">Essential for Class</span>' : ''}
+                   </div>
+                   <p>${recommendation.recommendation_text}</p>
+                   <small>${currentDate}</small>
+               </div>
+           `;
+   
+           if (isUpdate) {
+               // Find and update existing recommendation
+               const existingRec = recommendationsContainer.querySelector('.recommendation-card');
+               if (existingRec) {
+                   existingRec.outerHTML = recommendationHtml;
+               }
+           } else {
+               // Remove "No faculty recommendations yet" message if it exists
+               const noRecsMessage = recommendationsContainer.querySelector('p');
+               if (noRecsMessage && noRecsMessage.textContent.includes('No faculty recommendations')) {
+                   noRecsMessage.remove();
+               }
+               // Add new recommendation at the top
+               recommendationsContainer.insertAdjacentHTML('afterbegin', recommendationHtml);
+           }
+       }
+   
+       form.addEventListener('submit', async function(e) {
+           e.preventDefault();
+           if (submitBtn) {
+               submitBtn.disabled = true;
+           }
+           
+           try {
+               const response = await fetch(`/store/recommendations/toggle/{{ single_product.id }}/`, {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/x-www-form-urlencoded',
+                       'X-CSRFToken': csrf_token
+                   },
+                   body: new URLSearchParams({
+                       'recommendation_text': document.getElementById('recommendationText').value,
+                       'is_essential': document.getElementById('isEssential').checked
+                   })
+               });
+   
+               const data = await response.json();
+               
+               if (!response.ok) {
+                   throw new Error(data.message || 'Failed to save recommendation');
+               }
+   
+               showAlert('Recommendation saved successfully!');
+               
+               // Update the display
+               updateRecommendationDisplay(data.recommendation, !!deleteBtn);
+   
+               // If this is a new recommendation, add the delete button
+               if (!deleteBtn) {
+                   const buttonContainer = submitBtn.parentElement;
+                   const deleteButtonHtml = `
+                       <button type="button" class="btn btn-danger" id="deleteRecommendation">
+                           Remove Recommendation
+                       </button>
+                   `;
+                   buttonContainer.insertAdjacentHTML('beforeend', deleteButtonHtml);
+                   // Re-attach delete event listener to new button
+                   document.getElementById('deleteRecommendation').addEventListener('click', handleDelete);
+                   submitBtn.textContent = 'Update Recommendation';
+               }
+           } catch (err) {
+               showAlert(err.message, true);
+           } finally {
+               if (submitBtn) {
+                   submitBtn.disabled = false;
+               }
+           }
+       });
+   
+       // Separate function for delete handler
+       async function handleDelete() {
+           const deleteBtn = document.getElementById('deleteRecommendation');
+           if (!deleteBtn) return;
+           
+           if (!confirm('Are you sure you want to remove this recommendation?')) {
+               return;
+           }
+   
+           deleteBtn.disabled = true;
+           
+           try {
+               const response = await fetch(`/store/recommendations/remove/{{ single_product.id }}/`, {
+                   method: 'POST',
+                   headers: {
+                       'X-CSRFToken': csrf_token
+                   }
+               });
+   
+               if (!response.ok) {
+                   const data = await response.json();
+                   throw new Error(data.message || 'Failed to remove recommendation');
+               }
+   
+               showAlert('Recommendation removed successfully!');
+               
+               // Remove the recommendation from display
+               const recommendationCard = recommendationsContainer.querySelector('.recommendation-card');
+               if (recommendationCard) {
+                   recommendationCard.remove();
+               }
+               // If no recommendations left, show the "no recommendations" message
+               if (!recommendationsContainer.querySelector('.recommendation-card')) {
+                   recommendationsContainer.innerHTML = '<p>No faculty recommendations yet.</p>';
+               }
+   
+               // Reset the form
+               document.getElementById('recommendationText').value = '';
+               document.getElementById('isEssential').checked = false;
+               
+               // Update the UI
+               deleteBtn.remove();
+               submitBtn.textContent = 'Add Recommendation';
+           
+           } catch (err) {
+               showAlert(err.message, true);
+               if (deleteBtn) {
+                   deleteBtn.disabled = false;
+               }
+           }
+       }
+   
+       // Only attach delete handler if button exists
+       if (deleteBtn) {
+           deleteBtn.addEventListener('click', handleDelete);
+       }
+   });
+</script>
+{% endif %}
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+       const reviewForm = document.getElementById('reviewForm');
+       if (reviewForm) {
+           reviewForm.addEventListener('submit', function(event) {
+               const ratingInputs = document.querySelectorAll('input[name="rating"]');
+               const isRatingSelected = Array.from(ratingInputs).some(input => input.checked);
+               
+               if (!isRatingSelected) {
+                   event.preventDefault();
+                   document.getElementById('rating-error').style.display = 'block';
+               } else {
+                   document.getElementById('rating-error').style.display = 'none';
+               }
+           });
+       }
+   });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addToCartForm = document.getElementById('addToCartForm');
+        const cartBadge = document.querySelector('.cart-badge');
+        
+        if (addToCartForm) {
+            addToCartForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                fetch(addToCartForm.action, {
+                    method: 'POST',
+                    body: new FormData(addToCartForm),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update cart badge
+                        if (cartBadge) {
+                            cartBadge.textContent = data.cart_count;
+                            cartBadge.classList.remove('d-none');
+                        }
+    
+                        // Create success message
+                        const messageContainer = document.createElement('div');
+                        messageContainer.className = 'container mt-3';
+                        messageContainer.innerHTML = `
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `;
+    
+                        // Insert message at the top of the page
+                        document.querySelector('body').insertBefore(
+                            messageContainer, 
+                            document.querySelector('body').firstChild
+                        );
+    
+                        // Reset quantity input
+                        const quantityInput = addToCartForm.querySelector('input[name="quantity"]');
+                        if (quantityInput) {
+                            quantityInput.value = 1;
+                        }
+    
+                        // Auto-dismiss message after 3 seconds
+                        setTimeout(() => {
+                            messageContainer.remove();
+                        }, 3000);
+    
+                    } else {
+                        throw new Error(data.error || 'Error adding to cart');
+                    }
+                })
+                .catch(error => {
+                    // Create error message
+                    const messageContainer = document.createElement('div');
+                    messageContainer.className = 'container mt-3';
+                    messageContainer.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ${error.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `;
+    
+                    document.querySelector('body').insertBefore(
+                        messageContainer, 
+                        document.querySelector('body').firstChild
+                    );
+    
+                    setTimeout(() => {
+                        messageContainer.remove();
+                    }, 3000);
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Fullerton Black Market</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <!-- Active when path is exactly / -->
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <!-- Active when path contains /about -->
+                    <a class="nav-link {% if 'about' in request.path %}active{% endif %}" href="{% url 'about' %}">About</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <!-- Active when path contains /store -->
+                    <a class="nav-link dropdown-toggle {% if 'store' in request.path %}active{% endif %}" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Categories
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        {% for category in categories %}
+                        <li><a class="dropdown-item" href="{% url 'products_by_category' category.slug %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <!-- Active when path contains /contact -->
+                    <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'contact-us' %}">Contact</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <!-- Active when path contains /cart -->
+                    <a class="nav-link position-relative {% if 'cart' in request.path %}active{% endif %}" href="{% url 'cart_detail' %}">
+                        <span class="cart-icon-wrapper">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-badge badge rounded-pill bg-danger">
+                                {{ cart_item_count }}
+                                <span class="visually-hidden">items in cart</span>
+                            </span>
+                        </span>
+                        <span class="d-none d-lg-inline ms-1">Cart</span>
+                    </a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center {% if 'accounts' in request.path %}active{% endif %}" 
+                       href="#" 
+                       id="userDropdown" 
+                       role="button" 
+                       data-bs-toggle="dropdown" 
+                       aria-expanded="false"
+                       style="min-width: max-content;">
+                        <span class="me-2">{{ user.username }}</span>
+                        {% if user.userprofile.profile_picture %}
+                        <img src="{{ user.userprofile.profile_picture.url }}?t={{ user.userprofile.profile_picture.last_modified|date:'U' }}" 
+                             alt="Profile Picture" 
+                             class="rounded-circle" 
+                             width="30" 
+                             height="30">
+                        {% else %}
+                        <img src="{% static 'profile_pics/80x80.png' %}" 
+                             alt="Default Profile Picture" 
+                             class="rounded-circle" 
+                             width="30" 
+                             height="30">
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="{% url 'user_profile' %}">Edit Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        {% if user.is_superuser or user.is_admin %}
+                        <li><a class="dropdown-item" href="{% url 'admin_dashboard' %}">
+                            <i class="fas fa-user-shield me-2"></i>Admin Dashboard
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link {% if 'login' in request.path %}active{% endif %}" href="{% url 'login' %}">Sign In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'register' in request.path %}active{% endif %}" href="{% url 'register' %}">Register</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

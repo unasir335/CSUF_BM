@@ -1,0 +1,298 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css'%}"  rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'fontawesome-free-6.6.0-web/css/all.min.css'%}"  rel="stylesheet" />
+
+<div class="container py-5">
+    <style>
+        .fixed-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #333;
+            text-decoration: none;
+            z-index: 1000;
+        }
+        .arrow-left {
+            left: 10px;
+        }
+        .arrow-right {
+            right: 10px;
+        }
+    </style>
+    <a href="{% url 'sys_walkthrough'%}" class="fixed-arrow arrow-left">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <a href="{% url 'sys_arch2'%}" class="fixed-arrow arrow-right">
+        <i class="fas fa-arrow-right"></i>
+    </a>
+    
+    <!-- Project Overview -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Project Development Timeline</h2>
+            <p class="mb-0 small">September 20, 2023 - November 1, 2024</p>
+        </div>
+        <div class="card-body">
+            <!-- Phase Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h3 class="h2 text-primary">42</h3>
+                            <p class="mb-0">Code Files</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h3 class="h2 text-success">15</h3>
+                            <p class="mb-0">Features</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h3 class="h2 text-warning">13</h3>
+                            <p class="mb-0">Bug Fixes</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h3 class="h2 text-info">43</h3>
+                            <p class="mb-0">Days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Development Timeline -->
+            <h3 class="mb-4">Development Phases</h3>
+            <div class="timeline">
+                <!-- Phase 1 -->
+                <div class="row g-0">
+                    <div class="col-md-3 text-end pe-3">
+                        <h5>Initial Setup</h5>
+                        <p class="text-muted">Sept 20-30, 2023</p>
+                    </div>
+                    <div class="col-md-9 position-relative border-start ps-3 pb-4">
+                        <div class="position-absolute top-0 start-0 translate-middle-x mt-2">
+                            <div class="badge bg-primary rounded-circle p-2"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">Key Implementations:</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Project structure setup</li>
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Basic authentication system</li>
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Custom user model</li>
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Role management (Student/Faculty)</li>
+                                </ul>
+                                <div class="progress mt-3" style="height: 20px;">
+                                    <div class="progress-bar bg-success" style="width: 100%">15 files</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="row g-0">
+                    <div class="col-md-3 text-end pe-3">
+                        <h5>Core Features</h5>
+                        <p class="text-muted">Oct 1-15, 2023</p>
+                    </div>
+                    <div class="col-md-9 position-relative border-start ps-3 pb-4">
+                        <div class="position-absolute top-0 start-0 translate-middle-x mt-2">
+                            <div class="badge bg-success rounded-circle p-2"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">Features Added:</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Product management system</li>
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Shopping cart implementation</li>
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Faculty recommendations</li>
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Basic caching system</li>
+                                </ul>
+                                <div class="progress mt-3" style="height: 20px;">
+                                    <div class="progress-bar bg-success" style="width: 100%">28 files</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="row g-0">
+                    <div class="col-md-3 text-end pe-3">
+                        <h5>Security Enhancement</h5>
+                        <p class="text-muted">Oct 16-31, 2023</p>
+                    </div>
+                    <div class="col-md-9 position-relative border-start ps-3 pb-4">
+                        <div class="position-absolute top-0 start-0 translate-middle-x mt-2">
+                            <div class="badge bg-warning rounded-circle p-2"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">Security Features:</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-shield-fill-check text-success me-2"></i>Rate limiting implementation</li>
+                                    <li><i class="bi bi-shield-fill-check text-success me-2"></i>CSRF protection enhancement</li>
+                                    <li><i class="bi bi-shield-fill-check text-success me-2"></i>Transaction management</li>
+                                    <li><i class="bi bi-shield-fill-check text-success me-2"></i>Input validation system</li>
+                                </ul>
+                                <div class="progress mt-3" style="height: 20px;">
+                                    <div class="progress-bar bg-success" style="width: 100%">35 files</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="row g-0">
+                    <div class="col-md-3 text-end pe-3">
+                        <h5>System Optimization</h5>
+                        <p class="text-muted">Nov 1, 2023</p>
+                    </div>
+                    <div class="col-md-9 position-relative border-start ps-3">
+                        <div class="position-absolute top-0 start-0 translate-middle-x mt-2">
+                            <div class="badge bg-info rounded-circle p-2"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">Optimizations:</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-lightning-fill text-success me-2"></i>Advanced caching system</li>
+                                    <li><i class="bi bi-lightning-fill text-success me-2"></i>Performance improvements</li>
+                                    <li><i class="bi bi-lightning-fill text-success me-2"></i>Bug fixes</li>
+                                    <li><i class="bi bi-lightning-fill text-success me-2"></i>Documentation updates</li>
+                                </ul>
+                                <div class="progress mt-3" style="height: 20px;">
+                                    <div class="progress-bar bg-success" style="width: 100%">42 files</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Metrics -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Code Metrics</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Files</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Models</td>
+                                <td>8</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Views</td>
+                                <td>12</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Templates</td>
+                                <td>15</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Services</td>
+                                <td>7</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Feature Completion</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Authentication</td>
+                                <td><span class="badge bg-success">Complete</span></td>
+                                <td>Sept 25</td>
+                            </tr>
+                            <tr>
+                                <td>Product System</td>
+                                <td><span class="badge bg-success">Complete</span></td>
+                                <td>Oct 10</td>
+                            </tr>
+                            <tr>
+                                <td>Security Features</td>
+                                <td><span class="badge bg-success">Complete</span></td>
+                                <td>Oct 25</td>
+                            </tr>
+                            <tr>
+                                <td>Optimization</td>
+                                <td><span class="badge bg-success">Complete</span></td>
+                                <td>Nov 1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline .row:not(:last-child) .border-start {
+    min-height: 200px;
+}
+.badge.rounded-circle {
+    width: 20px;
+    height: 20px;
+}
+</style>
+

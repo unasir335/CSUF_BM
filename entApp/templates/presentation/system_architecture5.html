@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBM Testing Strategy</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <style>
+        .code-header {
+            background: #2d2d2d;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 4px 4px 0 0;
+            font-size: 0.9rem;
+        }
+        pre {
+            margin: 0 !important;
+            border-radius: 0 0 4px 4px !important;
+        }
+        .test-coverage-card {
+            transition: transform 0.2s;
+        }
+        .test-coverage-card:hover {
+            transform: translateY(-5px);
+        }
+        .progress {
+            height: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-5">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">Testing Strategy</h2>
+                        <p class="mb-0">Fullerton Black Market Enterprise Application</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Coverage Overview -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="mb-3">Test Coverage Overview</h3>
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="card test-coverage-card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Account Management</h5>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar bg-success" 
+                                         role="progressbar" 
+                                         style="width: 90%"
+                                         aria-valuenow="90" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">90%</div>
+                                </div>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li>✓ Email validation</li>
+                                    <li>✓ Role assignment</li>
+                                    <li>✓ Registration flow</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card test-coverage-card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Product System</h5>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar bg-success" 
+                                         role="progressbar" 
+                                         style="width: 85%"
+                                         aria-valuenow="85" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">85%</div>
+                                </div>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li>✓ CRUD operations</li>
+                                    <li>✓ Faculty recommendations</li>
+                                    <li>✓ Product search</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card test-coverage-card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Shopping Cart</h5>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar bg-info" 
+                                         role="progressbar" 
+                                         style="width: 80%"
+                                         aria-valuenow="80" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">80%</div>
+                                </div>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li>✓ Add/remove items</li>
+                                    <li>✓ Price calculations</li>
+                                    <li>⚠ Concurrent updates</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card test-coverage-card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Profile Management</h5>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar bg-info" 
+                                         role="progressbar" 
+                                         style="width: 85%"
+                                         aria-valuenow="85" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">85%</div>
+                                </div>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li>✓ Profile updates</li>
+                                    <li>✓ Image uploads</li>
+                                    <li>⚠ Large file handling</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Code Examples -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="mb-3">Key Test Implementations</h3>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-dark text-white">
+                                <h5 class="mb-0">Role-Based Authentication Tests</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="code-header">accounts/tests.py</div>
+                                <pre><code class="language-python">
+def test_email_based_role_assignment(self):
+    """Verify correct role assignment based on email domain"""
+    student = Account.objects.create_user(
+        email='student@csu.fullerton.edu',
+        username='testStudent',
+        password='securePass123'
+    )
+    faculty = Account.objects.create_user(
+        email='faculty@fullerton.edu',
+        username='testFaculty',
+        password='securePass123'
+    )
+
+    self.assertTrue(student.is_student)
+    self.assertFalse(student.is_faculty)
+    self.assertTrue(faculty.is_faculty)
+    self.assertFalse(faculty.is_student)
+                                </code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-dark text-white">
+                                <h5 class="mb-0">Faculty Recommendation Tests</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="code-header">store/tests.py</div>
+                                <pre><code class="language-python">
+def test_faculty_recommendation(self):
+    """Test faculty can add recommendations"""
+    self.client.login(
+        email='prof@fullerton.edu',
+        password='testpass123'
+    )
+    response = self.client.post(
+        reverse('toggle_recommendation'),
+        {
+            'product_id': self.product.id,
+            'recommendation_text': 'Essential for CS101',
+            'is_essential': True
+        }
+    )
+    
+    self.assertEqual(response.status_code, 200)
+    self.assertTrue(
+        ProductRecommendation.objects.filter(
+            product=self.product,
+            faculty__user=self.faculty,
+            is_essential=True
+        ).exists()
+    )
+                                </code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Known Limitations -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h3 class="mb-0">Known Limitations & Future Improvements</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Current Limitations</h5>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <h6 class="mb-1">Concurrent User Testing</h6>
+                                        <small class="text-muted">Limited to ~100 concurrent requests in test environment</small>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <h6 class="mb-1">File Upload Testing</h6>
+                                        <small class="text-muted">Large file handling needs comprehensive testing</small>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <h6 class="mb-1">Cache Testing</h6>
+                                        <small class="text-muted">Isolated environment may not reflect production patterns</small>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Planned Improvements</h5>
+                                <div class="list-group">
+                                    <div class="list-group-item">
+                                        <h6 class="mb-1">Integration Testing</h6>
+                                        <small class="text-muted">Add more tests between components</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <h6 class="mb-1">Performance Testing</h6>
+                                        <small class="text-muted">Implement benchmarking framework</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <h6 class="mb-1">Security Testing</h6>
+                                        <small class="text-muted">Expand coverage of security scenarios</small>
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

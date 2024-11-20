@@ -1,0 +1,218 @@
+{% extends "base.html" %} 
+{% load static %} 
+{% block title %}Fullerton Black Market{% endblock %}
+{% block content %}
+
+<!-- Start Banner Section -->
+<div style="position: relative;">
+    <!-- Hovering Title - Fixed to top -->
+    <div style="
+        position: absolute; 
+        top: 0;
+        left: 50%; 
+        transform: translateX(-50%);
+        z-index: 2; 
+        text-align: center;
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: rgba(0, 0, 0, 0.8);
+        border-radius: 5px;
+        max-width: 100%;
+    ">
+        <h1 class="display-4 mb-0" style="
+            font-family: 'Sixtyfour Convergence', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        ">Cal State Fullerton Black Market</h1>
+    </div>
+
+    <!-- Banner Carousel -->
+    <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="/static/misc_imgs/banner.png" class="d-block w-100" alt="CSUF Black Market Banner" style="height: 150px; object-fit: cover; filter: brightness(0.9);">
+            </div>
+            <div class="carousel-item">
+                <img src="/static/misc_imgs/banner2.png" class="d-block w-100" alt="CSUF Black Market Banner 2" style="height: 150px; object-fit: cover; filter: brightness(0.9);">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 768px) {
+        .display-4 {
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+    }
+</style>
+<!-- End Banner Section -->
+
+<!-- Start Container -->
+<div class="container mt-4">
+    <h2 class="text-center mb-4 fs-1 text-light" style="background-color: var(--primary-blue);font-family: 'Permanent Marker', cursive; padding: 10px; border-radius: 5px;">
+        Featured Products & Categories
+    </h2>
+
+    <div class="row justify-content-center g-4">
+        <!-- Products Carousel -->
+        <div class="col-md-6">
+            <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% if products %}
+                        {% for product in products %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <div class="card h-100 border-0 shadow">
+                                    {% if product.image %}
+                                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" 
+                                             style="height: 400px; object-fit: contain;">
+                                    {% else %}
+                                        <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" 
+                                             alt="Default product image" style="height: 400px; object-fit: cover;">
+                                    {% endif %}
+                                    <div class="card-body text-center" style="">
+                                        <h5 class="card-title fs-3">{{ product.name }}</h5>
+                                        <a href="{{ product.get_url }}" class="btn btn-primary btn-lg">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="carousel-item active">
+                            <div class="card h-100 border-0 shadow">
+                                <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" 
+                                     alt="Default product image" style="height: 400px; object-fit: cover;">
+                                <div class="card-body text-center" style="">
+                                    <h5 class="card-title" style="color: #0F6292;">No Products Available</h5>
+                                    <p class="card-text" style="color: #0F6292;">Please check back later.</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Categories Carousel -->
+        <div class="col-md-6">
+            <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% if categories %}
+                        {% for category in categories %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <div class="card h-100 border-0 shadow">
+                                    {% if category.image %}
+                                        <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}" 
+                                             style="height: 400px; object-fit: contain;">
+                                    {% else %}
+                                        <img src="{% static 'images/default-category.jpg' %}" class="card-img-top" 
+                                             alt="Default category image" style="height: 400px; object-fit: cover;">
+                                    {% endif %}
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title fs-3">{{ category.name }}</h5>
+                                        <a href="{{ category.get_url }}" class="btn btn-primary btn-lg">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="carousel-item active">
+                            <div class="card h-100 border-0 shadow">
+                                <img src="{% static 'images/default-category.jpg' %}" class="card-img-top" 
+                                     alt="Default category image" style="height: 400px; object-fit: cover;">
+                                <div class="card-body text-center" style="background-color: #FFED00;">
+                                    <h5 class="card-title" style="color: #0F6292;">No Categories Available</h5>
+                                    <p class="card-text" style="color: #0F6292;">Please check back later.</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#categoryCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#categoryCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- All Products Section -->
+<div class="container mt-5 mb-5">
+    <h2 class="text-center mb-4 fs-1 text-light" style="background-color: var(--primary-blue); font-family: 'Permanent Marker', cursive; padding: 10px; border-radius: 5px;">
+        All Products
+    </h2>
+    
+    {% if products %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for product in products|slice:":6" %}
+                <div class="col">
+                    <div class="card h-100 border-0 shadow hover-scale">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" 
+                                 style="height: 250px; object-fit: contain;">
+                        {% else %}
+                            <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" 
+                                 alt="Default product image" style="height: 250px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">Price: ${{ product.price }}</p>
+                            <a href="{{ product.get_url }}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            No products available.
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .hover-scale {
+        transition: transform 0.3s ease;
+    }
+    .hover-scale:hover {
+        transform: scale(1.03);
+    }
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: rgba(15, 98, 146, 0.7);
+        border-radius: 50%;
+        padding: 20px;
+    }
+    .card {
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
+    }
+</style>
+
+{% endblock %}

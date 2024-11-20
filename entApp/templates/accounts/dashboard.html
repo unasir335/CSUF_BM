@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="container mt-5">
+    <h1>Welcome to Your Dashboard, {{ full_name }}!</h1>
+
+    <div class="row mt-4">
+        <!-- User Information Card -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">User Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>User Type:</strong> 
+                        <span class="badge {% if user_type == 'Superuser' %}bg-danger
+                            {% elif user_type == 'Admin' %}bg-warning
+                            {% elif user_type == 'Faculty' %}bg-info
+                            {% elif user_type == 'Student' %}bg-success
+                            {% else %}bg-secondary{% endif %}">
+                            {{ user_type }}
+                        </span>
+                    </p>
+                    <p><strong>Email:</strong> {{ email }}</p>
+                    <p><strong>Phone:</strong> {{ phone_number }}</p>
+                    <p><strong>Joined:</strong> {{ date_joined|date:"F d, Y" }}</p>
+                    <p><strong>Last Login:</strong> {{ last_login|date:"F d, Y H:i" }}</p>
+
+                    {% if user_type == 'Student' and student_id %}
+                        <hr>
+                        <h6 class="mb-3">Student Information</h6>
+                        <p><strong>Student ID:</strong> {{ student_id|default:"Not Available" }}</p>
+                        <p><strong>Major:</strong> {{ major|default:"Not Available" }}</p>
+                        <p><strong>Year:</strong> {{ year|default:"Not Available" }}</p>
+                    {% elif user_type == 'Faculty' and faculty_id %}
+                        <hr>
+                        <h6 class="mb-3">Faculty Information</h6>
+                        <p><strong>Faculty ID:</strong> {{ faculty_id|default:"Not Available" }}</p>
+                        <p><strong>Department:</strong> {{ department|default:"Not Available" }}</p>
+                        <p><strong>Position:</strong> {{ position|default:"Not Available" }}</p>
+                    {% elif user_type == 'Admin' or user_type == 'Superuser' %}
+                        <hr>
+                        <h6 class="mb-3">Administrative Access</h6>
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">Access Admin Dashboard</a>
+                    {% endif %}
+
+                    {% if settings.DEBUG %}
+                    <!-- Debug Information -->
+                    <div class="mt-4 p-3 bg-light">
+                        <h6>Debug Information:</h6>
+                        <p><strong>User Type:</strong> {{ user_type }}</p>
+                        <p><strong>Has Student Profile:</strong> {{ user.student|yesno:"Yes,No" }}</p>
+                        <p><strong>Has Faculty Profile:</strong> {{ user.faculty|yesno:"Yes,No" }}</p>
+                        {% if user_type == 'Faculty' %}
+                            <p><strong>Faculty ID in Context:</strong> {{ faculty_id|default:"Not in context" }}</p>
+                            <p><strong>Department in Context:</strong> {{ department|default:"Not in context" }}</p>
+                            <p><strong>Position in Context:</strong> {{ position|default:"Not in context" }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Statistics Card -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Order Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Total Orders:</strong> {{ orders_count }}</p>
+                    <p><strong>Total Spent:</strong> ${{ total_spent|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    {% if orders %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Order History</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order Date</th>
+                            <th>Order Number</th>
+                            <th>Status</th>
+                            <th>Subtotal</th>
+                            <th>Tax</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
+                            <td>{{ order.order_number }}</td>
+                            <td>
+                                <span class="badge {% if order.status == 'DELIVERED' %}bg-success
+                                    {% elif order.status == 'PROCESSING' %}bg-primary
+                                    {% elif order.status == 'SHIPPED' %}bg-info
+                                    {% elif order.status == 'CANCELLED' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td>${{ order.get_subtotal|floatformat:2 }}</td>
+                            <td>${{ order.get_tax_amount|floatformat:2 }}</td>
+                            <td>${{ order.get_total_with_tax|floatformat:2 }}</td>
+                            <td>
+                                <a href="{% url 'order_complete' order_number=order.order_number %}" 
+                                   class="btn btn-sm btn-outline-primary">View Details</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4">
+        You haven't placed any orders yet.
+    </div>
+    {% endif %}
+</div>
+
+
+{% block extra_js %}
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // You could add sorting functionality here if needed
+    });
+</script>
+{% endblock %}
+
+{% endblock %}

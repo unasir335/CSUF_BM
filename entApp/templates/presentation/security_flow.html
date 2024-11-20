@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Security Architecture</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .diagram-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .security-note {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 1rem;
+        }
+        .card-header {
+            background: linear-gradient(45deg, #1a237e, #283593);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header text-white">
+                        <h2 class="mb-0">System Security Architecture</h2>
+                        <p class="mb-0 mt-2 text-light">Security Flow and Data Protection Layers</p>
+                    </div>
+                    <div class="card-body diagram-container">
+                        <div class="mermaid">
+                            flowchart TB
+                                subgraph UAL["User Access Layer"]
+                                    direction TB
+                                    auth["Authentication"]
+                                    sess["Sessions"]
+                                    state["User State"]
+                                    rate["Rate Limiting"]
+                                    req["Requests"]
+                                    auth --> |Validates| sess
+                                    sess --> |Manages| state
+                                    rate --> |Controls| req
+                                end
+
+                                subgraph SC["Security Controls"]
+                                    direction TB
+                                    valid["Input Validation"]
+                                    data["Data"]
+                                    csrf["CSRF Protection"]
+                                    forms["Forms"]
+                                    trans["Transaction Management"]
+                                    access["Data Access"]
+                                    valid --> |Sanitizes| data
+                                    csrf --> |Secures| forms
+                                    trans --> |Controls| access
+                                end
+
+                                subgraph DP["Data Protection"]
+                                    direction TB
+                                    atomic["Atomic Operations"]
+                                    integ["Data Integrity"]
+                                    dead["Deadlock Prevention"]
+                                    race["Race Conditions"]
+                                    img["Image Validation"]
+                                    files["File Uploads"]
+                                    atomic --> |Ensures| integ
+                                    dead --> |Prevents| race
+                                    img --> |Secures| files
+                                end
+
+                                db[(Database)]
+                                
+                                UAL --> |Enforces| SC
+                                SC --> |Protects| DP
+                                DP --> |Maintains| db
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">User Access Layer</h5>
+                                        <p class="security-note">Manages authentication, session control, and request rate limiting</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Security Controls</h5>
+                                        <p class="security-note">Handles input validation, CSRF protection, and transaction management</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Data Protection</h5>
+                                        <p class="security-note">Ensures data integrity, prevents race conditions, and secures file uploads</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'default',
+                themeVariables: {
+                    primaryColor: '#e3f2fd',
+                    primaryTextColor: '#1a237e',
+                    primaryBorderColor: '#1a237e',
+                    lineColor: '#3949ab',
+                    secondaryColor: '#e8eaf6',
+                    tertiaryColor: '#f3f4f6'
+                },
+                flowchart: {
+                    curve: 'basis',
+                    padding: 20,
+                    nodeSpacing: 50,
+                    rankSpacing: 50
+                }
+            });
+        });
+    </script>
+</body>
+</html>

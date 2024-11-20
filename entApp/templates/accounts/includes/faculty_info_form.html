@@ -1,0 +1,56 @@
+<h5 class="card-title mb-3">Faculty Information</h5>
+<div class="row g-3">
+    <!-- Faculty ID -->
+    <div class="col-12">
+        <div class="form-group">
+            <label for="{{ form.faculty_id.id_for_label }}" class="form-label">Faculty ID</label>
+            {{ form.faculty_id }}
+            {% if form.faculty_id.errors %}
+                <div class="small text-danger mt-1">
+                    {{ form.faculty_id.errors|striptags }}
+                </div>
+            {% endif %}
+            <small class="text-muted">Faculty ID cannot be changed</small>
+        </div>
+    </div>
+
+    <!-- Department -->
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="{{ form.department.id_for_label }}" class="form-label">Department</label>
+            {{ form.department }}
+            {% if form.department.errors %}
+                <div class="small text-danger mt-1">
+                    {{ form.department.errors|striptags }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Position -->
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="{{ form.position.id_for_label }}" class="form-label">Position</label>
+            {{ form.position }}
+            {% if form.position.errors %}
+                <div class="small text-danger mt-1">
+                    {{ form.position.errors|striptags }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Research Areas -->
+    <div class="col-12">
+        <div class="form-group">
+            <label for="{{ form.research_areas.id_for_label }}" class="form-label">Research Areas</label>
+            {{ form.research_areas }}
+            {% if form.research_areas.errors %}
+                <div class="small text-danger mt-1">
+                    {{ form.research_areas.errors|striptags }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>

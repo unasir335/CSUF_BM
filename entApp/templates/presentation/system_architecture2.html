@@ -1,0 +1,347 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css'%}"  rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'fontawesome-free-6.6.0-web/css/all.min.css'%}"  rel="stylesheet" />
+
+<div class="container mt-5 mb-5">
+    <style>
+        .fixed-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #333;
+            text-decoration: none;
+            z-index: 1000;
+        }
+        .arrow-left {
+            left: 10px;
+        }
+        .arrow-right {
+            right: 10px;
+        }
+    </style>
+    <a href="{% url 'sys_arch'%}" class="fixed-arrow arrow-left">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <a href="{% url 'sys_arch3'%}" class="fixed-arrow arrow-right">
+        <i class="fas fa-arrow-right"></i>
+    </a>
+    
+<div class="container-fluid py-5">
+    <!-- Main Architecture Overview -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">System Architecture Overview</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Architecture Layers -->
+                    <div class="row g-4">
+                        <!-- Presentation Layer -->
+                        <div class="col-md-3">
+                            <div class="card h-100 border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">Presentation Layer</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <strong>Templates</strong>
+                                            <ul class="list-unstyled ms-3 small">
+                                                <li>Bootstrap UI Components</li>
+                                                <li>Django Template Engine</li>
+                                                <li>Form Handling</li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <strong>Static Files</strong>
+                                            <ul class="list-unstyled ms-3 small">
+                                                <li>CSS/JavaScript</li>
+                                                <li>Images/Media</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Business Layer -->
+                        <div class="col-md-3">
+                            <div class="card h-100 border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">Business Layer</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <strong>Views</strong>
+                                            <ul class="list-unstyled ms-3 small">
+                                                <li>Request Handling</li>
+                                                <li>Business Logic</li>
+                                                <li>Response Generation</li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <strong>Services</strong>
+                                            <ul class="list-unstyled ms-3 small">
+                                                <li>Account Services</li>
+                                                <li>Product Services</li>
+                                                <li>Order Processing</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Layer -->
+                        <div class="col-md-3">
+                            <div class="card h-100 border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">Data Layer</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <strong>Models</strong>
+                                            <ul class="list-unstyled ms-3 small">
+                                                <li>User Models</li>
+                                                <li>Product Models</li>
+                                                <li>Order Models</li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <strong>Cache</strong>
+                                            <ul class="list-unstyled ms-3 small">
+                                                <li>Query Cache</li>
+                                                <li>Session Cache</li>
+                                                <li>Template Cache</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Layer -->
+                        <div class="col-md-3">
+                            <div class="card h-100 border-danger">
+                                <div class="card-header bg-danger text-white">
+                                    <h5 class="mb-0">Security Layer</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <strong>Authentication</strong>
+                                            <ul class="list-unstyled ms-3 small">
+                                                <li>User Authentication</li>
+                                                <li>Role Management</li>
+                                                <li>Session Security</li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <strong>Protection</strong>
+                                            <ul class="list-unstyled ms-3 small">
+                                                <li>CSRF Protection</li>
+                                                <li>Rate Limiting</li>
+                                                <li>Input Validation</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Components -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">Key Components</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Description</th>
+                                    <th>Implementation</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>User Management</td>
+                                    <td>Custom user model with role-based access</td>
+                                    <td><code>accounts.models.Account</code></td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Account Service</td>
+                                    <td>Handles user-related operations such as creation, role validation, and profile management</td>
+                                    <td><code>accounts.services.AccountService</code></td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Product System</td>
+                                    <td>Product catalog with recommendations</td>
+                                    <td><code>store.models.Product</code></td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Caching System</td>
+                                    <td>Multi-level caching implementation</td>
+                                    <td><code>core.cache.CacheHandler</code></td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Security System</td>
+                                    <td>Rate limiting and protection</td>
+                                    <td><code>core.security.SecurityHandler</code></td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Flow -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">Request Flow</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <!-- Request Flow Steps -->
+                        <div class="text-center p-3 border rounded m-2">
+                            <div class="bg-primary text-white rounded-circle d-inline-block p-3">1</div>
+                            <h5 class="mt-2">Client Request</h5>
+                            <small class="text-muted">Browser sends HTTP request</small>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <i class="bi bi-arrow-right fs-3"></i>
+                        </div>
+                        <div class="text-center p-3 border rounded m-2">
+                            <div class="bg-success text-white rounded-circle d-inline-block p-3">2</div>
+                            <h5 class="mt-2">URL Routing</h5>
+                            <small class="text-muted">Django URL dispatcher</small>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <i class="bi bi-arrow-right fs-3"></i>
+                        </div>
+                        <div class="text-center p-3 border rounded m-2">
+                            <div class="bg-info text-white rounded-circle d-inline-block p-3">3</div>
+                            <h5 class="mt-2">View Processing</h5>
+                            <small class="text-muted">Business logic execution</small>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <i class="bi bi-arrow-right fs-3"></i>
+                        </div>
+                        <div class="text-center p-3 border rounded m-2">
+                            <div class="bg-warning text-white rounded-circle d-inline-block p-3">4</div>
+                            <h5 class="mt-2">Template Rendering</h5>
+                            <small class="text-muted">HTML generation</small>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <i class="bi bi-arrow-right fs-3"></i>
+                        </div>
+                        <div class="text-center p-3 border rounded m-2">
+                            <div class="bg-danger text-white rounded-circle d-inline-block p-3">5</div>
+                            <h5 class="mt-2">Response</h5>
+                            <small class="text-muted">Send to client</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Metrics -->
+    <div class="row">
+        <!-- Performance Metrics -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0">Performance Metrics</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6>Cache Hit Rate</h6>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 85%;" 
+                                 aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6>Average Response Time</h6>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 90%;" 
+                                 aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">65ms</div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6>Database Query Optimization</h6>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;" 
+                                 aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Capacity -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">System Capacity</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Concurrent Users
+                            <span class="badge bg-primary rounded-pill">1000</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Requests per Minute
+                            <span class="badge bg-primary rounded-pill">10,000</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Database Connections
+                            <span class="badge bg-primary rounded-pill">100</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Cache Size
+                            <span class="badge bg-primary rounded-pill">512MB</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bi::before {
+    display: inline-block;
+    content: "";
+    vertical-align: -.125em;
+    background-image: url("data:image/svg+xml,<svg viewBox='0 0 16 16' fill='currentColor' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+    width: 1rem;
+    height: 1rem;
+}
+</style>

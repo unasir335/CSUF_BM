@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="mb-4">
+                <i class="fas fa-check-circle text-success" style="font-size: 48px;"></i>
+            </div>
+            <h2 class="card-title text-success mb-4">Order Placed Successfully!</h2>
+            
+            <p class="mb-3">Your order number is: <strong>{{ order.order_number }}</strong></p>
+            <p class="text-muted mb-4">We'll send a confirmation email with your order details.</p>
+
+            <div class="order-details mt-4">
+                <h4>Order Details</h4>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order_items %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>${{ item.product_price|floatformat:2 }}</td>
+                                <td>${{ item.get_total|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="3" class="text-end"><strong class="text-black">Subtotal:</strong></td>
+                                <td>${{ subtotal|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong class="text-black">Tax:</strong></td>
+                                <td>${{ tax|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong class="text-black">Total:</strong></td>
+                                <td><strong class="text-black">${{ total|floatformat:2 }}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="shipping-info mt-4">
+                <h4>Shipping Information</h4>
+                <p>
+                    {{ order.full_name }}<br>
+                    {{ order.address_line_1 }}<br>
+                    {% if order.address_line_2 %}
+                        {{ order.address_line_2 }}<br>
+                    {% endif %}
+                    {{ order.city }}, {{ order.state }} {{ order.zipcode }}<br>
+                    {{ order.country }}
+                </p>
+            </div>
+
+            <div class="payment-info mt-4">
+                <h4>Payment Information</h4>
+                <p>
+                    <strong>Payment Method:</strong> {{ order.payment_method }}<br>
+                    <strong>Transaction ID:</strong> {{ order.transaction_id }}<br>
+                    <strong>Payment Status:</strong> 
+                    <span class="badge {% if order.payment_status == 'PAID' %}bg-success
+                        {% elif order.payment_status == 'PENDING' %}bg-warning
+                        {% elif order.payment_status == 'FAILED' %}bg-danger
+                        {% else %}bg-secondary{% endif %}">
+                        {{ order.payment_status }}
+                    </span>
+                </p>
+            </div>
+
+            <div class="mt-4">
+                <a href="{% url 'home' %}" class="btn btn-primary">Continue Shopping</a>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">View Order History</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Prevent going back to checkout page
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', function() {
+        window.history.pushState(null, '', window.location.href);
+    });
+
+    // Disable browser back button
+    window.onload = function() {
+        if (typeof history.pushState === "function") {
+            history.pushState("jibberish", null, null);
+            window.onpopstate = function () {
+                history.pushState('newjibberish', null, null);
+            };
+        }
+    };
+
+    // Also handle beforeunload
+    window.addEventListener('beforeunload', function(e) {
+        // If you're navigating to specific allowed pages (like home), don't show the warning
+        if (!e.target.activeElement.href || 
+            !e.target.activeElement.href.includes('{% url "home" %}')) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+</script>
+{% endblock %}
+
+{% endblock %}

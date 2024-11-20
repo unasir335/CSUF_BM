@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Security Question</h2>
+    <p>{{ security_question }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="security_answer">Your Answer</label>
+            <input type="text" name="security_answer" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}

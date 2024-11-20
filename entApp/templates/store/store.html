@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Store{% endblock %}
+
+{% block content %}
+<div class="container store-page-container my-5">
+    <div class="row g-4">
+        <!-- Sidebar Filters -->
+        <div class="col-md-3">
+            <div class="sidebar-filters">
+                <!-- Categories -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Categories</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="{% url 'store' %}" class="nav-link {% if not category %}active{% endif %}">All Products</a>
+                        {% for cat in categories %}
+                            <a href="{{ cat.get_url }}" class="nav-link {% if category.slug == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Faculty Filters -->
+                <form method="get" id="filterForm">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Faculty Filters</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Department Dropdown -->
+                            <div class="mb-3">
+                                <select name="department" class="form-select">
+                                    <option value="">All Departments</option>
+                                    {% for dept in departments %}
+                                        <option value="{{ dept }}" {% if selected_department == dept %}selected{% endif %}>{{ dept }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Faculty Search -->
+                            <div class="mb-3">
+                                <input type="text" name="faculty_search" class="form-control" placeholder="Search by Faculty" value="{{ faculty_search }}">
+                            </div>
+
+                            <!-- Checkboxes -->
+                            <div class="mb-3">
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" name="essential_only" id="essential_only" {% if essential_only %}checked{% endif %}>
+                                    <label class="form-check-label" for="essential_only">Show Essential Items Only</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="recommended_only" id="recommended_only" {% if recommended_only %}checked{% endif %}>
+                                    <label class="form-check-label" for="recommended_only">Show Recommended Items Only</label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="col-md-9">
+            <!-- Sorting -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <form method="get" class="d-flex" id="sortForm">
+
+                            {% if department %}
+                                <input type="hidden" name="department" value="{{ department }}">
+                            {% endif %}
+                            {% if faculty_search %}
+                                <input type="hidden" name="faculty_search" value="{{ faculty_search }}">
+                            {% endif %}
+                            {% if essential_only %}
+                                <input type="hidden" name="essential_only" value="on">
+                            {% endif %}
+                            {% if recommended_only %}
+                                <input type="hidden" name="recommended_only" value="on">
+                            {% endif %}
+                            
+                            <select name="sort_by" class="form-select" onchange="this.form.submit()">
+                                {% for value, label in sort_form.sort_by.field.choices %}
+                                    <option value="{{ value }}" {% if sort_by == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products -->
+            {% if products %}
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        {% for product in products %}
+                        <div class="col">
+                            <div class="card h-100 product-card shadow-sm">
+                                <!-- Essential Badge -->
+                                {% if product.recommendations.filter.exists %}
+                                    {% if product.recommendations.filter.first.is_essential %}
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        <span class="badge bg-success">Essential</span>
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                        
+                                <!-- Product Image -->
+                                <div class="card-img-wrapper">
+                                    {% if product.image %}
+                                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                                    {% else %}
+                                    <img src="{% static 'images/default-product.jpg' %}" class="card-img-top" alt="Default product image">
+                                    {% endif %}
+                                </div>
+                        
+                                <!-- Card Content -->
+                                <div class="card-body d-flex flex-column">
+                                    <!-- Main Content (Always Present) -->
+                                    <div class="flex-grow-0">
+                                        <h5 class="card-title">
+                                            <a href="{{ product.get_url }}" class="text-decoration-none">{{ product.name }}</a>
+                                        </h5>
+                                        <p class="card-text">Price: ${{ product.price }}</p>
+                                    </div>
+                        
+                                    <!-- Optional Content -->
+                                    <div class="flex-grow-1">
+                                        {% if product.recommendations.exists %}
+                                        <div class="recommendations-preview mb-2">
+                                            <small class="text-muted d-block mb-2">
+                                                Recommended By Faculty: {{ product.recommendations.count }} {{ product.recommendations.count|pluralize }}
+                                            </small>
+                                            {% for recommendation in product.recommendations.all|slice:":2" %}
+                                            <div class="recommendation-item small mb-1">
+                                                <strong>{{ recommendation.faculty.user.get_full_name }}</strong>
+                                                <span class="text-muted">({{ recommendation.faculty.department }})</span>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                        
+                                        {% if product.average_rating %}
+                                        <div class="rating-section mb-2">
+                                            <small class="text-muted">Rating: {{ product.average_rating|floatformat:1 }} / 5</small>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                        
+                                    <!-- Button (Always at Bottom) -->
+                                    <div class="flex-grow-0 mt-auto">
+                                        <a href="{{ product.get_url }}" class="btn btn-primary btn-sm w-100">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+            {% else %}
+            <div class="alert alert-info">
+                No products available.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+    {% block js%}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle sort dropdown changes
+            const sortSelect = document.getElementById('sort_select');
+            const hiddenSortInput = document.getElementById('hidden_sort_by');
+            const filterForm = document.getElementById('filterForm');
+        
+            sortSelect.addEventListener('change', function() {
+                hiddenSortInput.value = this.value;
+                filterForm.submit();
+            });
+        });
+        </script>
+    {% endblock %}
+
+{% endblock %}

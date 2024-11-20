@@ -1,0 +1,22 @@
+{% for category in categories %}
+<tr>
+    <td>{{ category.name }}</td>
+    <td>{{ category.description|truncatewords:10 }}</td>
+    <td>
+        <a href="{% url 'edit_category' category.id %}" class="btn btn-sm btn-warning">Edit</a>
+        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal{{ category.id }}">
+            Delete
+        </button>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="3" class="text-center">
+        {% if search_term %}
+            No categories found matching "{{ search_term }}"
+        {% else %}
+            No categories found
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">{{ title }}</h3>
+                    {% if not is_edit %}
+                    <div class="text-center mt-2">
+                        <div class="btn-group" role="group">
+                            <a href="?type=physical" class="btn btn-sm {% if not is_digital %}btn-primary{% else %}btn-outline-primary{% endif %}">Physical Product</a>
+                            <a href="?type=digital" class="btn btn-sm {% if is_digital %}btn-primary{% else %}btn-outline-primary{% endif %}">Digital Product</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if is_digital %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Digital products have unlimited stock and require version tracking.
+                        </div>
+                        {% endif %}
+                        
+                        {% for field in form %}
+                        <div class="form-group mb-3">
+                            {% if field.name == 'featured' or field.name == 'is_available' %}
+                            <div class="form-check">
+                                {{ field }}
+                                <label class="form-check-label" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                            </div>
+                            {% else %}
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            {{ field }}
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="text-danger small">
+                                {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                {% if is_edit %}Update{% else %}Add{% endif %} 
+                                {% if is_digital %}Digital{% else %}Physical{% endif %} 
+                                Product
+                            </button>
+                            <a href="{% url 'manage_items' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

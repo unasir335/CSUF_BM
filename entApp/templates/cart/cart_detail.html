@@ -1,0 +1,102 @@
+<style>
+    /* Override strong text color for cart details */
+    .cart-detail-container .table strong,
+    .cart-detail-container .table b {
+    color: var(--primary-black);
+}
+</style>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container cart-detail-container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0 text-white fs-4">
+                {% if user.is_authenticated %}
+                    {{ user.username }}'s Shopping Cart
+                {% else %}
+                    Guest's Shopping Cart
+                {% endif %}
+            </h2>
+        </div>
+        <div class="card-body">
+            {% if cart and cart.items.all %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart.items.all %}
+                                <tr>
+                                    <td class="align-middle">{{ item.product.name }}</td>
+                                    <td class="align-middle">
+                                        <form method="post" action="{% url 'update_cart' item.id %}" class="d-flex align-items-center gap-2">
+                                            {% csrf_token %}
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control" style="width: 80px;">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td class="align-middle">${{ item.product.price|floatformat:2 }}</td>
+                                    <td class="align-middle">${{ item.subtotal|floatformat:2 }}</td>
+                                    <td class="align-middle">
+                                        <form method="post" action="{% url 'remove_from_cart' item.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3 class="mb-0 text-white fs-4">Order Summary</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tr>
+                                <td>Subtotal:</td>
+                                <td class="text-end">${{ cart.cart_total|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tax ({{ cart.tax_rate|floatformat:2 }}%):</td>
+                                <td class="text-end">${{ cart.tax|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total:</strong></td>
+                                <td class="text-end"><strong>${{ cart.total_with_tax|floatformat:2 }}</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a href="{% url 'home' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                    <a href="{% url 'checkout' %}" class="btn btn-primary">
+                        Proceed to Checkout<i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            {% else %}
+                <div class="alert">
+                    <p class="mb-0">Your cart is empty. <a href="{% url 'home' %}">Continue shopping</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

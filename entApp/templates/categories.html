@@ -1,0 +1,11 @@
+{% extends "base.html" %} 
+{% block content %}
+<h1> Categories </h1>
+<ul>
+    {% for category in categories %}
+    <li>
+        {{category.title}}: {% if category.available %} Available {% else %} Out of Stock {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

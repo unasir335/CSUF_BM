@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Walkthrough</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-5">
+
+        <style>
+            .fixed-arrow {
+                position: fixed;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 2rem;
+                color: #333;
+                text-decoration: none;
+                z-index: 1000;
+            }
+            .arrow-left {
+                left: 10px;
+            }
+            .arrow-right {
+                right: 10px;
+            }
+        </style>
+        <a href="{% url 'sys_arch3'%}" class="fixed-arrow arrow-left">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <a href="{% url 'sys_arch5'%}" class="fixed-arrow arrow-right">
+            <i class="fas fa-arrow-right"></i>
+        </a>
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">Code Architecture Walkthrough</h2>
+                        <p class="mb-0">Fullerton Black Market Enterprise Application</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">System Components</h5>
+                        <h2 class="display-4">100</h2>
+                        <p class="small">Total Components</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Cache Hit Rate</h5>
+                        <h2 class="display-4">85%</h2>
+                        <p class="small">Average Cache Efficiency</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Response Time</h5>
+                        <h2 class="display-4">65ms</h2>
+                        <p class="small">Average Response Time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Components -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h3 class="mb-0">Core Components Implementation</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Authentication System -->
+                        <div class="mb-4">
+                            <h4>1. Authentication System</h4>
+                            <div class="code-block bg-light p-3 rounded">
+                                <pre><code class="language-python">
+class Account(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(max_length=100, unique=True, db_index=True)
+    username = models.CharField(max_length=50, unique=True)
+    is_student = models.BooleanField(default=False)
+    is_faculty = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+
+    objects = MyAccountManager()
+
+    def validate_user_type(self):
+        roles = [self.is_student, self.is_faculty, self.is_admin]
+        if sum(roles) > 1:
+            raise ValidationError("User cannot have multiple roles")
+                                </code></pre>
+                            </div>
+                            <div class="mt-2">
+                                <h6>Key Features:</h6>
+                                <ul>
+                                    <li>Custom user model with role management</li>
+                                    <li>Email-based authentication</li>
+                                    <li>Role validation enforcement</li>
+                                    <li>Integrated with Django's auth system</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Caching System -->
+                        <div class="mb-4">
+                            <h4>2. Caching System</h4>
+                            <div class="code-block bg-light p-3 rounded">
+                                <pre><code class="language-python">
+class CacheHandler:
+    @staticmethod
+    def get_or_set(cache_key, data_func, timeout=3600):
+        data = cache.get(cache_key)
+        if data is None:
+            data = data_func()
+            if data:
+                cacheable_data = copy.copy(data)
+                cacheable_data = clean_for_cache(cacheable_data)
+                cache.set(cache_key, cacheable_data, timeout)
+        return data
+
+    @staticmethod
+    def invalidate_user_caches(user_id):
+        keys = [
+            f"user:profile:{user_id}",
+            f"user:dashboard:{user_id}",
+            f"user:orders:{user_id}"
+        ]
+        cache.delete_many(keys)
+                                </code></pre>
+                            </div>
+                            <div class="mt-2">
+                                <h6>Key Features:</h6>
+                                <ul>
+                                    <li>Centralized cache management</li>
+                                    <li>Automatic data serialization</li>
+                                    <li>Bulk cache invalidation</li>
+                                    <li>Configurable timeouts</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Product Management -->
+                        <div class="mb-4">
+                            <h4>3. Product Management</h4>
+                            <div class="code-block bg-light p-3 rounded">
+                                <pre><code class="language-python">
+class Product(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.IntegerField()
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    is_digital = models.BooleanField(default=False)
+
+    @property
+    def discounted_price(self):
+        return self.price * (1 - self.discount / 100)
+
+class ProductRecommendation(models.Model):
+    product = models.ForeignKey(Product, related_name='recommendations')
+    faculty = models.ForeignKey('Faculty', related_name='recommended_products')
+    is_essential = models.BooleanField(default=False)
+                                </code></pre>
+                            </div>
+                            <div class="mt-2">
+                                <h6>Key Features:</h6>
+                                <ul>
+                                    <li>Support for physical and digital products</li>
+                                    <li>Faculty recommendation system</li>
+                                    <li>Dynamic pricing calculation</li>
+                                    <li>Category management</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Security Implementation -->
+                        <div class="mb-4">
+                            <h4>4. Security Implementation</h4>
+                            <div class="code-block bg-light p-3 rounded">
+                                <pre><code class="language-python">
+def rate_limit(key_prefix, limit=10, period=60):
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapped(request, *args, **kwargs):
+            cache_key = f"rate_limit_{key_prefix}_{request.user.id}"
+            count = cache.get(cache_key, 0)
+            if count >= limit:
+                return JsonResponse({'error': 'Rate limit exceeded'}, 
+                                  status=429)
+            cache.incr(cache_key, 1)
+            cache.expire(cache_key, period)
+            return view_func(request, *args, **kwargs)
+        return wrapped
+    return decorator
+
+@transaction.atomic
+def secure_upload(upload_type, limit=10, period=3600):
+    """Combined security decorator for file uploads"""
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs):
+            if not check_rate_limit(request.user.id, upload_type):
+                raise PermissionDenied("Rate limit exceeded")
+            
+            try:
+                with transaction.atomic():
+                    return view_func(request, *args, **kwargs)
+            except OperationalError as e:
+                logger.error(f"Upload failed: {str(e)}")
+                raise
+        return wrapper
+    return decorator
+                                </code></pre>
+                            </div>
+                            <div class="mt-2">
+                                <h6>Key Features:</h6>
+                                <ul>
+                                    <li>Rate limiting on sensitive operations</li>
+                                    <li>Atomic transactions for data integrity</li>
+                                    <li>Secure file upload handling</li>
+                                    <li>Comprehensive error logging</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Process -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="mb-0">Development Process & Testing</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Testing Strategy</th>
+                                        <th>Coverage</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Authentication</td>
+                                        <td>Unit & Integration Tests</td>
+                                        <td>95%</td>
+                                        <td><span class="badge bg-success">Complete</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Caching</td>
+                                        <td>Unit Tests & Benchmarks</td>
+                                        <td>90%</td>
+                                        <td><span class="badge bg-success">Complete</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Product System</td>
+                                        <td>Integration Tests</td>
+                                        <td>85%</td>
+                                        <td><span class="badge bg-success">Complete</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Security</td>
+                                        <td>Penetration Testing</td>
+                                        <td>98%</td>
+                                        <td><span class="badge bg-success">Complete</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

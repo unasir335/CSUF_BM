@@ -1,0 +1,241 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'bootstrap-5.3.3-dist/css/bootstrap.min.css'%}"  rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'fontawesome-free-6.6.0-web/css/all.min.css'%}"  rel="stylesheet" />
+
+<div class="container-fluid py-5">
+    <style>
+        .fixed-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #333;
+            text-decoration: none;
+            z-index: 1000;
+        }
+        .arrow-left {
+            left: 10px;
+        }
+        .arrow-right {
+            right: 10px;
+        }
+    </style>
+    <a href="{% url 'sys_arch2'%}" class="fixed-arrow arrow-left">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <a href="{% url 'sys_arch4'%}" class="fixed-arrow arrow-right">
+        <i class="fas fa-arrow-right"></i>
+    </a>
+    <!-- Metrics Cards Row -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">System Components</h5>
+                    <h2 class="display-4">100</h2>
+                    <p class="small">Total Components</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Cache Hit Rate</h5>
+                    <h2 class="display-4">85%</h2>
+                    <p class="small">Average Cache Efficiency</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Response Time</h5>
+                    <h2 class="display-4">65ms</h2>
+                    <p class="small">Average Response Time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Performance Metrics</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Component Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="distributionChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Features -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">System Features</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="mb-0">Authentication Layer</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Role-based access control</li>
+                                <li class="list-group-item">Custom user model handling</li>
+                                <li class="list-group-item">Session management</li>
+                                <li class="list-group-item">Security question integration</li>
+                            </ul>
+                            <div class="mt-3">
+                                <pre class="bg-light p-2 rounded"><code>
+public class Account extends User {
+    private boolean isStudent;
+    private boolean isFaculty;
+    private boolean isAdmin;
+    
+    @Column(unique = true)
+    private String email;
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="mb-0">Caching System</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Multi-level caching strategy</li>
+                                <li class="list-group-item">Cache key versioning</li>
+                                <li class="list-group-item">Automatic invalidation</li>
+                                <li class="list-group-item">Cache warming system</li>
+                            </ul>
+                            <div class="mt-3">
+                                <pre class="bg-light p-2 rounded"><code>
+public class CacheHandler {
+    public static Object getOrSet(
+        String key, 
+        Supplier<?> dataFunc, 
+        Duration timeout
+    ) {
+        return cache.get(key)
+            .orElseGet(() -> {
+                Object data = dataFunc.get();
+                cache.set(key, data, timeout);
+                return data;
+            });
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="mb-0">Product Management</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Digital & physical products</li>
+                                <li class="list-group-item">Faculty recommendations</li>
+                                <li class="list-group-item">Category management</li>
+                                <li class="list-group-item">Inventory tracking</li>
+                            </ul>
+                            <div class="mt-3">
+                                <pre class="bg-light p-2 rounded"><code>
+@Entity
+public class Product {
+    @Id
+    private Long id;
+    private String name;
+    private BigDecimal price;
+    private Integer stock;
+    
+    @ManyToOne
+    private Category category;
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script>
+// Performance Metrics Chart
+const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+new Chart(performanceCtx, {
+    type: 'bar',
+    data: {
+        labels: ['DB Query', 'Profile Load', 'Product List', 'Cart Update', 'Order Process'],
+        datasets: [
+            {
+                label: 'Cached (ms)',
+                data: [45, 65, 85, 35, 95],
+                backgroundColor: '#0d6efd'
+            },
+            {
+                label: 'Uncached (ms)',
+                data: [320, 280, 420, 180, 520],
+                backgroundColor: '#fd7e14'
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Component Distribution Chart
+const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+new Chart(distributionCtx, {
+    type: 'pie',
+    data: {
+        labels: ['Views', 'Models', 'Services', 'Utils', 'Middleware'],
+        datasets: [{
+            data: [25, 20, 30, 15, 10],
+            backgroundColor: [
+                '#0d6efd',
+                '#198754',
+                '#ffc107',
+                '#dc3545',
+                '#6610f2'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right'
+            }
+        }
+    }
+});
+</script>

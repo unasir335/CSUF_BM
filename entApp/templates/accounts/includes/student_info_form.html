@@ -1,0 +1,44 @@
+{% comment %} templates/accounts/includes/student_info_form.html {% endcomment %}
+
+<h5 class="card-title mb-3">Student Information</h5>
+<div class="row g-3">
+    <!-- Student ID -->
+    <div class="col-12">
+        <div class="form-group">
+            <label for="{{ form.student_id.id_for_label }}" class="form-label">Student ID</label>
+            {{ form.student_id }}
+            {% if form.student_id.errors %}
+                <div class="small text-danger mt-1">
+                    {{ form.student_id.errors|striptags }}
+                </div>
+            {% endif %}
+            <small class="text-muted">Student ID cannot be changed</small>
+        </div>
+    </div>
+
+    <!-- Major -->
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="{{ form.major.id_for_label }}" class="form-label">Major</label>
+            {{ form.major }}
+            {% if form.major.errors %}
+                <div class="small text-danger mt-1">
+                    {{ form.major.errors|striptags }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Expected Graduation Year -->
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="{{ form.year.id_for_label }}" class="form-label">Expected Graduation Year</label>
+            {{ form.year }}
+            {% if form.year.errors %}
+                <div class="small text-danger mt-1">
+                    {{ form.year.errors|striptags }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
