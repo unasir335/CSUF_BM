@@ -1,0 +1,56 @@
+name: Django CI
+run-name: ${{ github.actor }} is running Django CI
+on:
+  push:
+    branches: [ dev, backup ]
+  pull_request:
+    branches: [ dev, backup ]
+
+jobs:
+  Django-Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 black
+
+      - name: Run Black code formatter check
+        run: |
+          echo "Running Black code formatting check..."
+          black .
+
+      - name: Run Flake8 Linting
+        run: |
+          echo "Running Flake8 linting checks..."
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Run full lint check
+          flake8 . --count --exit-zero --max-complexity=10 --statistics
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Append project description to README filename
+        run: |
+          PROJECT_DESCRIPTION="CSUF Black Market - CMS and WebApp"
+          cp README.md "README_${PROJECT_DESCRIPTION}.md"
+
+      - name: Upload README to S3
+        run: |
+          aws s3 cp "README_${PROJECT_DESCRIPTION}.md" s3://csuf-cpsc-362
+
+      - run: echo "CI completed with status - status WIP"
