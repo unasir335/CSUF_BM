@@ -42,6 +42,11 @@ jobs:
       #   run: |
       #     pip install -r requirements.txt
 
+      steps:
+        # Checkout the repository first
+        - name: Checkout Repository
+        uses: actions/checkout@v3
+
       # Configure AWS Credentials using the AWS GitHub Action
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -53,8 +58,8 @@ jobs:
       # Append project description to README filename
       - name: Append project description to README filename
         run: |
-          PROJECT_DESCRIPTION="CSUF Black Market placeholder description"
-          cp readme.md "README_${PROJECT_DESCRIPTION}.md"
+          PROJECT_DESCRIPTION="CSUF Black Market - CMS and WebApp"
+          cp README.md "README_${PROJECT_DESCRIPTION}.md"
 
       # Upload README to S3
       - name: Upload README to S3
