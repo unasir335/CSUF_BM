@@ -37,17 +37,6 @@ jobs:
           # Run full lint check
           flake8 . --count --exit-zero --max-complexity=10 --statistics
 
-      # Optional: Install dependencies or run tests
-      # - name: Install dependencies
-      #   run: |
-      #     pip install -r requirements.txt
-
-      steps:
-        # Checkout the repository first
-        - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      # Configure AWS Credentials using the AWS GitHub Action
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -55,13 +44,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      # Append project description to README filename
       - name: Append project description to README filename
         run: |
           PROJECT_DESCRIPTION="CSUF Black Market - CMS and WebApp"
           cp README.md "README_${PROJECT_DESCRIPTION}.md"
 
-      # Upload README to S3
       - name: Upload README to S3
         run: |
           aws s3 cp "README_${PROJECT_DESCRIPTION}.md" s3://csuf-cpsc-362
